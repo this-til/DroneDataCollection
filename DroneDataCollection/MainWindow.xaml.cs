@@ -21,6 +21,12 @@ namespace DroneDataCollection;
 /// </summary>
 public partial class MainWindow : Window {
 
+    public LogService logService { get; } = new LogService();
+
+    public YamlService yamlService { get; } = new YamlService();
+
+    public ConfigService configService { get; } = new ConfigService();
+
     public SqlService sqlService { get; } = new SqlService();
 
     public MainWindow() {
