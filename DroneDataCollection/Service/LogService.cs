@@ -6,8 +6,12 @@ namespace DroneDataCollection;
 public class LogService {
 
     public LogService() {
-        FileInfo logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "/Config/log4net.config");
-        XmlConfigurator.ConfigureAndWatch(logCfg);
+
+        //获取配置文件全称
+        string str = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + ".Config.log4net.config";
+        //读取配置文件
+        Stream? stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(str);
+        XmlConfigurator.Configure(stream!);
     }
 
 }

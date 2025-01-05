@@ -15,31 +15,31 @@ public class YamlService {
     public YamlService() {
 
         DeserializerBuilder deserializerBuilder = new DeserializerBuilder();
-        deserializerBuilder.WithTypeInspector
+        /*deserializerBuilder.WithTypeInspector
         (
             inspector => new CompositeTypeInspector
             (
                 new YamlMemberReadableFieldsTypeInspector(new StaticTypeResolver()),
                 inspector
             )
-        );
+        );*/
         deserializer = deserializerBuilder.Build();
 
         SerializerBuilder serializerBuilder = new SerializerBuilder();
-        serializerBuilder.WithTypeInspector
+        /*serializerBuilder.WithTypeInspector
         (
             inspector => new CompositeTypeInspector
             (
                 new YamlMemberReadableFieldsTypeInspector(new StaticTypeResolver()),
                 inspector
             )
-        );
+        );*/
         serializer = serializerBuilder.Build();
     }
 
 }
 
-public class YamlMemberReadableFieldsTypeInspector : ReflectionTypeInspector {
+/*public class YamlMemberReadableFieldsTypeInspector : ReflectionTypeInspector {
 
     private readonly ITypeResolver typeResolver;
 
@@ -106,4 +106,4 @@ public class YamlMemberReadableFieldsTypeInspector : ReflectionTypeInspector {
 
     }
 
-}
+}*/

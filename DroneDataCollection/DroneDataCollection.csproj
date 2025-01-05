@@ -3,6 +3,7 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net9.0-windows</TargetFramework>
+        <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
@@ -11,8 +12,12 @@
     <ItemGroup>
         <PackageReference Include="HandyControl" Version="3.5.1" />
         <PackageReference Include="log4net" Version="3.0.3" />
-        <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.0-preview3.24332.3" />
+        <PackageReference Include="MySql.Data" Version="9.1.0" />
         <PackageReference Include="YamlDotNet" Version="16.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Config\log4net.config" />
     </ItemGroup>
     
 </Project>
