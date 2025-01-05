@@ -14,6 +14,10 @@ public partial class SqlService : DependencyObject {
 
     public MySqlConnection? sqlConnection { get; set; }
 
+    public event Action? linkedDatabaseEvent;
+
+    public event Action? closeConnectionDatabaseEvent;
+
     public void connectDatabase(string connectionString) {
         if (sqlConnection is not null) {
             return;
@@ -23,6 +27,7 @@ public partial class SqlService : DependencyObject {
             sqlConnection.Open();
             Growl.SuccessGlobal("连接数据库成功。");
             this.sqlConnection = sqlConnection;
+            linkedDatabaseEvent?.Invoke();
         }
         catch (Exception exception) {
             log.Error("数据库连接失败，错误信息：", exception);
@@ -37,6 +42,7 @@ public partial class SqlService : DependencyObject {
         sqlConnection.Close();
         sqlConnection.Dispose();
         sqlConnection = null;
+        closeConnectionDatabaseEvent?.Invoke();
         Growl.SuccessGlobal("数据库链接已关闭。");
     }
 

@@ -13,45 +13,13 @@
     <Grid>
         <TabControl x:Name="tabControl" Margin="10" Style="{StaticResource TabControlCapsuleSolid}">
             <TabItem x:Name="database" Header="数据库">
-                <Grid Width="400" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="主机" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4" />
-                    <TextBox x:Name="hostTextBox" Grid.Row="0" Grid.Column="1" Margin="4" />
-
-                    <TextBlock Text="端口" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4" Grid.Row="1" Grid.Column="0" />
-                    <TextBox x:Name="portTextBox" Grid.Row="1" Grid.Column="1" Margin="4" />
-
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="数据库" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4" />
-                    <TextBox x:Name="databaseTextBox" Grid.Column="1" Grid.Row="2" Margin="4" />
-
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="用户" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4" />
-                    <TextBox x:Name="userTextBox" Grid.Column="1" Grid.Row="3" Margin="4" />
-
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="密码" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4" />
-                    <TextBox x:Name="passwordTextBox" Grid.Column="1" Grid.Row="4" Margin="4" />
-
-                    <!--<StackPanel Grid.Row="5" Grid.Column="1" ></StackPanel>-->
-
-                    <Button x:Name="databaseButton" Style="{StaticResource ButtonPrimary}" Visibility="{Binding sqlService.connectDatabaseButtonVisibility}" Grid.Row="5" Grid.Column="1" Content="连接数据库" Click="DatabaseButton_OnClick" />
-
-                </Grid>
+                <self:DatabasePanel x:Name="databasePanel"></self:DatabasePanel>
             </TabItem>
             <TabItem x:Name="device" Header="设备">
+                <self:DevicePanel></self:DevicePanel>
             </TabItem>
             <TabItem x:Name="dataVisualization" Header="数据可视化">
+                <self:DataVisualizationPanel></self:DataVisualizationPanel>
             </TabItem>
             <TabItem x:Name="dataExport" Header="数据导出">
             </TabItem>
