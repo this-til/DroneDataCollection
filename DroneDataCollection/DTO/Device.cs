@@ -1,17 +1,19 @@
 ﻿using System.Data;
+using Google.Protobuf.WellKnownTypes;
 using MySql.Data.MySqlClient;
+using MySql.Data.Types;
 
 namespace DroneDataCollection;
 
 public class Device {
 
-    public int Id { get; set; }
+    public int id { get; set; }
 
-    public string HostName { get; set; }
+    public string host_name { get; set; } = String.Empty;
 
-    public int? SynchronizationDate { get; set; }
+    public bool deleted { get; set; }
 
-    public int? SynchronizationTime { get; set; }
+    public MySqlDateTime synchronization_time { get; set; }
 
     // 默认构造函数
     public Device() {
@@ -19,16 +21,14 @@ public class Device {
 
     // 从MySqlDataReader构造的构造函数
     public Device(MySqlDataReader reader) {
-        Id = reader.GetInt32("id");
-        HostName = reader.GetString("host_name");
-        
-        SynchronizationDate = reader.IsDBNull("synchronization_date")
-            ? null
-            : reader.GetInt32("synchronization_date");
-        
-        SynchronizationTime = reader.IsDBNull("synchronization_time")
-            ? null
-            : reader.GetInt32("synchronization_time");
+        id = reader.GetInt32("id");
+        host_name = reader.GetString("host_name");
+
+        deleted = !reader.IsDBNull("deleted") && reader.GetBoolean("deleted");
+
+        synchronization_time = reader.IsDBNull("synchronization_time")
+            ? default
+            : reader.GetMySqlDateTime("synchronization_time");
     }
 
 }

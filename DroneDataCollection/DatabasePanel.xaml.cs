@@ -14,6 +14,17 @@ public partial class DatabasePanel {
         InitializeComponent();
         this.DataContext = this;
         this.Loaded += MainWindow_Loaded;
+
+        MainWindow.mainWindow.sqlService.linkedDatabaseEvent += sqlServiceOnlinkedDatabaseEvent;
+        MainWindow.mainWindow.sqlService.closeConnectionDatabaseEvent += sqlServiceOncloseConnectionDatabaseEvent;
+    }
+
+    private void sqlServiceOncloseConnectionDatabaseEvent() {
+        databaseButton.Content = "连接数据库";
+    }
+
+    private void sqlServiceOnlinkedDatabaseEvent() {
+        databaseButton.Content = "关闭数据库链接";
     }
 
     private void saveDatabaseConfig() {
@@ -36,9 +47,6 @@ public partial class DatabasePanel {
     private void MainWindow_Loaded(object sender, RoutedEventArgs e) {
         loadDatabaseConfig();
         sqlService.connectDatabase(getConnectionStringFromConfig());
-        if (sqlService.sqlConnection is not null) {
-            databaseButton.Content = "关闭数据库链接";
-        }
     }
 
     private string getConnectionStringFromConfig() => $"server={configService.userConfig.host};port={configService.userConfig.port};database={configService.userConfig.database};user={configService.userConfig.user};password={configService.userConfig.password};Min Pool Size=5;Max Pool Size=50";
@@ -47,14 +55,10 @@ public partial class DatabasePanel {
 
         if (sqlService.sqlConnection is not null) {
             sqlService.closeDatabase();
-            databaseButton.Content = "连接数据库";
             return;
         }
         saveDatabaseConfig();
         sqlService.connectDatabase(getConnectionStringFromConfig());
-        if (sqlService.sqlConnection is not null) {
-            databaseButton.Content = "关闭数据库链接";
-        }
     }
 
 }

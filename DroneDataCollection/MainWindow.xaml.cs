@@ -32,20 +32,18 @@ public partial class MainWindow : Window {
 
     public MainWindow() {
         mainWindow = this;
-        InitializeComponent();
         logService = new LogService();
         yamlService = new YamlService();
         configService = new ConfigService();
         sqlService = new SqlService();
+        InitializeComponent();
+
         this.DataContext = this;
         this.Closing += MainWindow_Closed;
     }
 
-
     private void MainWindow_Closed(object? sender, CancelEventArgs cancelEventArgs) {
         sqlService.closeDatabase();
     }
-
-
 
 }

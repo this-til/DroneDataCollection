@@ -11,7 +11,7 @@ public class ConfigService {
     public FileInfo fileInfo { get; } = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "/Config/user.yaml");
 
     public ConfigService() {
-        loadConfig();
+        MainWindow.mainWindow.Loaded += (sender, args) => { loadConfig(); };
     }
 
     public void loadConfig() {
