@@ -1,7 +1,6 @@
 ﻿using System.Data;
-using Google.Protobuf.WellKnownTypes;
-using MySql.Data.MySqlClient;
-using MySql.Data.Types;
+using System.Data.Common;
+using Microsoft.Data.SqlClient;
 
 namespace DroneDataCollection;
 
@@ -13,14 +12,14 @@ public class Device {
 
     public bool deleted { get; set; }
 
-    public MySqlDateTime synchronization_time { get; set; }
+    public DateTime synchronization_time { get; set; }
 
     // 默认构造函数
     public Device() {
     }
 
     // 从MySqlDataReader构造的构造函数
-    public Device(MySqlDataReader reader) {
+    public Device(DbDataReader reader) {
         id = reader.GetInt32("id");
         host_name = reader.GetString("host_name");
 
@@ -28,7 +27,7 @@ public class Device {
 
         synchronization_time = reader.IsDBNull("synchronization_time")
             ? default
-            : reader.GetMySqlDateTime("synchronization_time");
+            : reader.GetDateTime("synchronization_time");
     }
 
 }

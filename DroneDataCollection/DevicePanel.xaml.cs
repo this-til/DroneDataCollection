@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,7 +8,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LiveCharts.Defaults;
-using MySql.Data.Types;
 
 namespace DroneDataCollection;
 
@@ -18,17 +18,12 @@ public partial class DevicePanel {
     public DevicePanel() {
         InitializeComponent();
         this.DataContext = this;
-        MainWindow.mainWindow.sqlService.linkedDatabaseEvent += sqlServiceOnlinkedDatabaseEvent;
-        MainWindow.mainWindow.sqlService.closeConnectionDatabaseEvent += sqlServiceOncloseConnectionDatabaseEvent;
+        App.instance.sqlService.linkedDatabaseEvent += sqlServiceOnlinkedDatabaseEvent;
+        App.instance.sqlService.closeConnectionDatabaseEvent += sqlServiceOncloseConnectionDatabaseEvent;
 
         AddHandler(ButtonBase.ClickEvent, new RoutedEventHandler(onButton_Click));
 
-        // 创建一个DispatcherTimer实例
-        DispatcherTimer timer = new DispatcherTimer();
-        timer.Interval = TimeSpan.FromSeconds(1);
-        timer.Tick += timerCallback;
-        timer.Start();
-
+        App.instance.Exit += mainWindowOnClosed;
     }
 
     private void onButton_Click(object sender, RoutedEventArgs e) {
@@ -49,7 +44,7 @@ public partial class DevicePanel {
         Task.Run
         (
             async () => {
-                List<Device> devices = await MainWindow.mainWindow.sqlService.query<Device>("SELECT * FROM device");
+                List<Device> devices = await App.instance.sqlService.query<Device>("SELECT * FROM device");
                 Dispatcher.Invoke
                 (
                     () => {
@@ -57,17 +52,18 @@ public partial class DevicePanel {
                             if (device.deleted) {
                                 continue;
                             }
+                            RunTimeDevice runTimeDevice = new RunTimeDevice() {
+                                Id = device.id,
+                                HostName = device.host_name,
+                                SynchronizationTime = device.synchronization_time,
+                                state = DeviceState.offline,
+                                Ip = "null"
+                            };
                             runTimeDeviceCollection.Add
                             (
-                                new RunTimeDevice() {
-                                    Id = device.id,
-                                    HostName = device.host_name,
-                                    SynchronizationTime = device.synchronization_time,
-                                    sync = false,
-                                    online = false,
-                                    Ip = "null"
-                                }
+                                runTimeDevice
                             );
+                            Task.Run(() => monitoringDevice(runTimeDevice));
                         }
                     }
                 );
@@ -76,15 +72,45 @@ public partial class DevicePanel {
 
     }
 
-    private void timerCallback(object? sender, EventArgs e) {
-        /*IntPtr vk7016N_createNetworkContext = libvk7016n.VK7016N_CreateNetworkContext(Marshal.StringToHGlobalAnsi(HOSTNAME));
-        if (vk7016N_createNetworkContext == IntPtr.Zero) {
-            
-        }*/
+    private async Task monitoringDevice(RunTimeDevice device) {
+
+        while (!device.needToDestroy) {
+            await Task.Delay(1000);
+            switch (device.state) {
+
+                case DeviceState.offline:
+                    Dispatcher.Invoke(() => device.state = DeviceState.tryConnection);
+                    IntPtr vk7016N_createNetworkContext = libvk7016n.VK7016N_CreateNetworkContext(Marshal.StringToHGlobalAnsi(device.HostName));
+                    device.VK7016N = vk7016N_createNetworkContext;
+                    Dispatcher.Invoke
+                    (
+                        () => device.state = device.VK7016N == IntPtr.Zero
+                            ? DeviceState.offline
+                            : DeviceState.online
+                    );
+                    break;
+                case DeviceState.online:
+                    break;
+                case DeviceState.sync:
+                    break;
+            }
+        }
+
+        if (device.state != DeviceState.offline) {
+            libvk7016n.VK7016N_ContextDestroy(ref device.VK7016N);
+        }
+
     }
 
     private void sqlServiceOncloseConnectionDatabaseEvent() {
+        foreach (RunTimeDevice runTimeDevice in runTimeDeviceCollection) {
+            runTimeDevice.needToDestroy = true;
+        }
         runTimeDeviceCollection.Clear();
+    }
+
+    private void mainWindowOnClosed(object? sender, EventArgs e) {
+        sqlServiceOncloseConnectionDatabaseEvent();
     }
 
 }
@@ -98,35 +124,38 @@ public partial class RunTimeDevice : ObservableObject {
     public string hostName = String.Empty;
 
     [ObservableProperty]
-    public MySqlDateTime synchronizationTime;
+    public DateTime synchronizationTime;
 
     [ObservableProperty]
-    public string onlineState = String.Empty;
-
-    [ObservableProperty]
-    public string syncState = String.Empty;
-
-    public bool online {
-        get;
-        set {
-            field = value;
-            OnlineState = field
-                ? "在线"
-                : "离线";
-        }
-    }
-
-    public bool sync {
-        get;
-        set {
-            field = value;
-            SyncState = field
-                ? "正在同步"
-                : "未操作";
-        }
-    }
+    public string stateText = string.Empty;
 
     [ObservableProperty]
     public string ip = string.Empty;
+
+    public DeviceState state {
+        get;
+        set {
+            field = value;
+            StateText = field switch {
+                DeviceState.online => "在线", DeviceState.offline => "离线", DeviceState.tryConnection => "尝试连接", DeviceState.sync => "正在同步", _ => String.Empty
+            };
+        }
+    }
+
+    public IntPtr VK7016N;
+
+    public bool needToDestroy;
+
+}
+
+public enum DeviceState {
+
+    online,
+
+    offline,
+
+    tryConnection,
+
+    sync
 
 }

@@ -1,6 +1,4 @@
 ﻿using System.IO;
-using Org.BouncyCastle.Math.EC;
-using YamlDotNet.Serialization;
 
 namespace DroneDataCollection;
 
@@ -11,7 +9,7 @@ public class ConfigService {
     public FileInfo fileInfo { get; } = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "/Config/user.yaml");
 
     public ConfigService() {
-        MainWindow.mainWindow.Loaded += (sender, args) => { loadConfig(); };
+        App.instance.Startup += (sender, args) => { loadConfig(); };
     }
 
     public void loadConfig() {
@@ -30,7 +28,7 @@ public class ConfigService {
         }
 
         using StreamReader streamReader = fileInfo.OpenText();
-        userConfig = MainWindow.mainWindow.yamlService.deserializer.Deserialize<UserConfig>(streamReader) ?? new UserConfig();
+        userConfig = App.instance.yamlService.deserializer.Deserialize<UserConfig>(streamReader) ?? new UserConfig();
     }
 
     public void saveConfig() {
@@ -54,7 +52,7 @@ public class ConfigService {
 
         using StreamWriter streamWriter = fileInfo.CreateText();
 
-        MainWindow.mainWindow.yamlService.serializer.Serialize(streamWriter, userConfig, typeof(UserConfig));
+        App.instance.yamlService.serializer.Serialize(streamWriter, userConfig, typeof(UserConfig));
 
     }
 

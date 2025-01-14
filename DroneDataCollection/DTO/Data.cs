@@ -1,10 +1,10 @@
-﻿using System.Data;
-using MySql.Data.MySqlClient;
+﻿
+using System.Data;
+using System.Data.Common;
+using Microsoft.Data.SqlClient;
 
 namespace DroneDataCollection;
 
-using System;
-using MySql.Data.MySqlClient;
 
 public class Data {
 
@@ -62,7 +62,7 @@ public class Data {
 
     // 使用MySqlDataReader作为参数的构造函数
 
-    public Data(MySqlDataReader reader) {
+    public Data(DbDataReader reader) {
 
         id = reader.GetInt32("id");
         

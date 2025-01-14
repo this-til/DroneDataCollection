@@ -12,16 +12,19 @@
 
     <Grid>
         <TabControl x:Name="tabControl" Margin="10" Style="{StaticResource TabControlCapsuleSolid}">
-            <TabItem x:Name="database" Header="数据库">
+            <TabItem x:Name="databaseTabItem" Header="数据库">
                 <self:DatabasePanel x:Name="databasePanel"></self:DatabasePanel>
             </TabItem>
-            <TabItem x:Name="device" Header="设备">
+            <TabItem x:Name="deviceTabItem" Header="设备">
                 <self:DevicePanel></self:DevicePanel>
             </TabItem>
-            <TabItem x:Name="dataVisualization" Header="数据可视化">
+            <TabItem x:Name="dataVisualizationTabItem" Header="数据可视化">
                 <self:DataVisualizationPanel></self:DataVisualizationPanel>
             </TabItem>
-            <TabItem x:Name="dataExport" Header="数据导出">
+            <TabItem x:Name="dataExportTabItem" Header="数据导出">
+            </TabItem>
+            <TabItem x:Name="consolePanelTabItem" Header="控制台">
+                <self:ConsolePanel x:Name="consolePanel"> </self:ConsolePanel>
             </TabItem>
         </TabControl>
     </Grid>

@@ -10,7 +10,5 @@ public class Block {
         this.head = head;
         this.body = body;
     }
-
-    
     
 }

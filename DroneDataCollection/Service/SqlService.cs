@@ -1,9 +1,11 @@
 ﻿using System.Data.Common;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using HandyControl.Controls;
 using log4net;
+using Microsoft.Data.SqlClient;
 using MySql.Data.MySqlClient;
 
 namespace DroneDataCollection;
@@ -22,16 +24,17 @@ public partial class SqlService : DependencyObject {
         if (sqlConnection is not null) {
             return;
         }
+        log.Info($"try Connecting to database: {connectionString}");
         try {
             MySqlConnection sqlConnection = new MySqlConnection(connectionString);
             sqlConnection.Open();
+            log.Info($"Connected to database");
             Growl.SuccessGlobal("连接数据库成功。");
             this.sqlConnection = sqlConnection;
             linkedDatabaseEvent?.Invoke();
         }
         catch (Exception exception) {
             log.Error("数据库连接失败，错误信息：", exception);
-            Growl.ErrorGlobal("数据库连接失败，错误信息：" + exception.Message);
         }
     }
 
@@ -43,6 +46,7 @@ public partial class SqlService : DependencyObject {
         sqlConnection.Dispose();
         sqlConnection = null;
         closeConnectionDatabaseEvent?.Invoke();
+        log.Info($"Closed database");
         Growl.SuccessGlobal("数据库链接已关闭。");
     }
 

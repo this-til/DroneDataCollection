@@ -22,28 +22,12 @@ public partial class MainWindow : Window {
 
     public static MainWindow mainWindow { get; private set; } = null!;
 
-    public LogService logService { get; }
-
-    public YamlService yamlService { get; }
-
-    public ConfigService configService { get; }
-
-    public SqlService sqlService { get; }
 
     public MainWindow() {
         mainWindow = this;
-        logService = new LogService();
-        yamlService = new YamlService();
-        configService = new ConfigService();
-        sqlService = new SqlService();
         InitializeComponent();
-
         this.DataContext = this;
-        this.Closing += MainWindow_Closed;
     }
-
-    private void MainWindow_Closed(object? sender, CancelEventArgs cancelEventArgs) {
-        sqlService.closeDatabase();
-    }
+    
 
 }
