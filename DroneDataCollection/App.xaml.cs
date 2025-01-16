@@ -24,6 +24,8 @@ public partial class App : Application {
     public ConfigService configService { get; }
 
     public SqlService sqlService { get; }
+    
+    public DeviceService deviceService { get; }
 
     public App() {
         instance = this;
@@ -31,6 +33,7 @@ public partial class App : Application {
         yamlService = new YamlService();
         configService = new ConfigService();
         sqlService = new SqlService();
+        deviceService = new DeviceService();
         Startup += onStartupEventHandler;
     }
 

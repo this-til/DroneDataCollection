@@ -1,10 +1,13 @@
 ﻿using System.IO;
+using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DroneDataCollection;
 
-public class ConfigService {
+public partial class ConfigService : ObservableObject {
 
-    public UserConfig userConfig { get; set; } = new UserConfig();
+    [ObservableProperty]
+    public partial UserConfig userConfig { get; set; } = new UserConfig();
 
     public FileInfo fileInfo { get; } = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "/Config/user.yaml");
 
@@ -58,16 +61,21 @@ public class ConfigService {
 
 }
 
-public class UserConfig {
+public partial class UserConfig : ObservableObject {
 
-    public string host = string.Empty;
+    [ObservableProperty]
+    public partial string host { get; set; } = string.Empty;
 
-    public string database = string.Empty;
+    [ObservableProperty]
+    public partial string database { get; set; } = string.Empty;
 
-    public string port = string.Empty;
+    [ObservableProperty]
+    public partial string port { get; set; } = string.Empty;
 
-    public string user = string.Empty;
+    [ObservableProperty]
+    public partial string user { get; set; } = string.Empty;
 
-    public string password = string.Empty;
+    [ObservableProperty]
+    public partial string password { get; set; } = string.Empty;
 
 }

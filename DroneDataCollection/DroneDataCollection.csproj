@@ -23,6 +23,28 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Config\log4net.config" />
+      <EmbeddedResource Remove="Controls\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Controls\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Remove="Controls\**" />
+      <Page Update="DataVisualization\ChartDataVisualization.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Controls\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Resource\" />
     </ItemGroup>
     
 </Project>

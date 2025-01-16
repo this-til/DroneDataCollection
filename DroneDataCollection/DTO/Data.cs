@@ -10,9 +10,7 @@ public class Data {
 
     public int id { get; set; }
 
-    public int date { get; set; }
-
-    public int time { get; set; }
+    public DateTime time { get; set; }
 
     public int device_id { get; set; }
 
@@ -66,9 +64,7 @@ public class Data {
 
         id = reader.GetInt32("id");
         
-        date = reader.GetInt32("date");
-        
-        time = reader.GetInt32("time");
+        time = reader.GetDateTime("time");
 
         device_id = reader.GetInt32("device_id");
 
