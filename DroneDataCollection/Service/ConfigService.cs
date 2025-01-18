@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DroneDataCollection;

@@ -1,8 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Windows.Controls;
-using CommunityToolkit.Mvvm.ComponentModel;
-using LiveCharts.Defaults;
 using Microsoft.Data.Analysis;
 
 namespace DroneDataCollection;
@@ -15,7 +12,7 @@ public abstract class AbsDataVisualization : UserControl {
     protected AbsDataVisualization() {
 
         // 创建一个二维数组作为数据源
-        List<List<object>> data = new List<List<object>>() {
+        List<List<object>> data = new List<List<object>> {
             {
                 [
                     "Alice",
@@ -41,7 +38,7 @@ public abstract class AbsDataVisualization : UserControl {
         DataFrame? dataFrame = DataFrame.LoadFrom
         (
             data,
-            new List<(string, Type)>() {
+            new List<(string, Type)> {
                 ("Name", typeof(string)), ("Age", typeof(int)), ("IsActive", typeof(bool))
             }
         );

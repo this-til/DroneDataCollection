@@ -1,13 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
-using LiveCharts.Defaults;
 using Microsoft.Data.Analysis;
 
 namespace DroneDataCollection;
@@ -43,19 +37,19 @@ public partial class DataFrameGrid {
             };
 
             if (dataFrameColumn.DataType.IsEnum) {
-                column = new DataGridComboBoxColumn() {
+                column = new DataGridComboBoxColumn {
                     ItemsSource = Enum.GetValues(dataFrameColumn.DataType).Cast<object>(),
                     SelectedValueBinding = binding
                 };
             }
 
             else if (dataFrameColumn.DataType == typeof(bool)) {
-                column = new DataGridCheckBoxColumn() {
+                column = new DataGridCheckBoxColumn {
                     Binding = binding
                 };
             }
             else {
-                column = new DataGridTextColumn() {
+                column = new DataGridTextColumn {
                     Binding = binding,
                 };
             }

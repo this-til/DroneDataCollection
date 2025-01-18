@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-
-namespace DroneDataCollection;
+﻿namespace DroneDataCollection;
 
 public partial class ChartDataVisualization {
 

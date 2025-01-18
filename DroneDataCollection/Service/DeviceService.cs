@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
-using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DroneDataCollection;
@@ -35,7 +34,7 @@ public partial class DeviceService : ObservableObject {
                             if (device.deleted) {
                                 continue;
                             }
-                            RunTimeDevice runTimeDevice = new RunTimeDevice() {
+                            RunTimeDevice runTimeDevice = new RunTimeDevice {
                                 id = device.id,
                                 hostName = device.host_name,
                                 synchronizationTime = device.synchronization_time,

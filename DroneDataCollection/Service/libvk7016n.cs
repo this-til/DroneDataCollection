@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 public class libvk7016n
 {
@@ -14,14 +9,14 @@ public class libvk7016n
         SyncEnable_DirIn = 2,
         SyncEnable_DirOut = 3,
         Sync_Dir_Error = 4
-    };
+    }
 
     public enum FilterType
     {
         FilterType_Sinc5 = 0,
         FilterType_Wideband = 1,
         FilterType_Error = 2
-    };
+    }
 
     public enum PGIAInputType
     {
@@ -29,7 +24,7 @@ public class libvk7016n
         PGIAInputType_Single_Ended_ADC = 1,
         PGIAInputType_Single_Ended_IEPE = 2,
         PGIAInputType_Error = 3
-    };
+    }
 
     public enum InputRange
     {
@@ -42,7 +37,7 @@ public class libvk7016n
         InputRange_50mV = 6,
         InputRange_20mV = 7,
         InputRange_Error = 8
-    };
+    }
 
     public enum TriggerMode
     {
@@ -53,7 +48,7 @@ public class libvk7016n
         TriggerMode_High_Level = 4,
         TriggerMode_Low_Level = 5,
         TriggerMode_Error = 6
-    };
+    }
 
     public enum TriggerSource
     {
@@ -75,42 +70,42 @@ public class libvk7016n
         TriggerSource_ADC14 = 15,
         TriggerSource_ADC15 = 16,
         TriggerSource_Error = 17
-    };
+    }
 
     public enum AOUT
     {
         AOUT1 = 0,
         AOUT2 = 1,
         AOUT_Error = 2
-    };
+    }
 
     public enum OfflineSave
     {
         OfflineSave_Disable = 0,
         OfflineSave_Enable = 1,
         OfflineSave_Error = 2
-    };
+    }
 
     public enum SaveFormat
     {
         SaveFormat_BIN = 0,
         SaveFormat_CSV = 1,
         SaveFormat_Error = 2
-    };
+    }
 
     public enum SaveParam
     {
         SaveParam_Disable = 0,
         SaveParam_Enable = 1,
         SaveParam_Error = 2
-    };
+    }
 
     public enum SaveChannel
     {
         SaveChannel_Disable = 0,
         SaveChannel_Enable = 1,
         SaveChannel_Error = 2
-    };
+    }
 
     //2.1 获取DLL函数的版本信息
     //2.1 Get the version information of DLL

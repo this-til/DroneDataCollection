@@ -6,8 +6,7 @@
             xmlns:local="clr-namespace:DroneDataCollection"
             xmlns:hc="https://handyorg.github.io/handycontrol"
             mc:Ignorable="d"
-            d:DesignHeight="300"
-            d:DesignWidth="300"
+            d:DesignHeight="450" d:DesignWidth="800"
 
             HeadersVisibility="All"
 >

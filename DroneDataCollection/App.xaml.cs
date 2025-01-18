@@ -1,10 +1,6 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Threading;
-using HandyControl.Controls;
 using log4net;
-using MessageBox = System.Windows.MessageBox;
 
 namespace DroneDataCollection;
 
@@ -24,8 +20,10 @@ public partial class App : Application {
     public ConfigService configService { get; }
 
     public SqlService sqlService { get; }
-    
+
     public DeviceService deviceService { get; }
+
+    public PropertyEditorService propertyEditorService { get; }
 
     public App() {
         instance = this;
@@ -34,6 +32,7 @@ public partial class App : Application {
         configService = new ConfigService();
         sqlService = new SqlService();
         deviceService = new DeviceService();
+        propertyEditorService = new PropertyEditorService();
         Startup += onStartupEventHandler;
     }
 

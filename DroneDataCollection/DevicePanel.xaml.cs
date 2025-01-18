@@ -1,13 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
-using LiveCharts.Defaults;
 
 namespace DroneDataCollection;
 
@@ -15,7 +8,6 @@ public partial class DevicePanel {
 
     public DeviceService deviceService {
         get => App.instance.deviceService;
-        private set { }
     }
 
 

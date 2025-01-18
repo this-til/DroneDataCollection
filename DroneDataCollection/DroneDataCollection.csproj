@@ -37,14 +37,20 @@
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>
       </Page>
+      <Page Update="Resource\PropertyGridBaseStyle.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Control\DataVisualization\ChartDataVisualization.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
     </ItemGroup>
 
     <ItemGroup>
       <None Remove="Controls\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Resource\" />
+      <None Remove="Control\DepthPropertyGrid.xaml.cs~" />
+      <None Remove="Control\DepthPropertyItem.xaml.cs~" />
     </ItemGroup>
     
 </Project>

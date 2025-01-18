@@ -42,20 +42,21 @@ public class ListBoxHelper {
     }
 
     private static void OnSelectedItemsChanged(DependencyObject target, DependencyPropertyChangedEventArgs e) {
-        var listBox = target as ListBox;
-        if ((listBox != null) && (listBox.SelectionMode == SelectionMode.Multiple)) {
-            if (e.OldValue != null) {
-                listBox.SelectionChanged -= OnlistBoxSelectionChanged;
-            }
-            IList collection = e.NewValue as IList;
-            listBox.SelectedItems.Clear();
-            if (collection != null) {
-                foreach (var item in collection) {
-                    listBox.SelectedItems.Add(item);
-                }
-                listBox.SelectionChanged += OnlistBoxSelectionChanged;
-            }
+        if (target is not ListBox listBox || listBox.SelectionMode != SelectionMode.Multiple) {
+            return;
         }
+        if (e.OldValue != null) {
+            listBox.SelectionChanged -= OnlistBoxSelectionChanged;
+        }
+        IList collection = e.NewValue as IList;
+        listBox.SelectedItems.Clear();
+        if (collection == null) {
+            return;
+        }
+        foreach (var item in collection) {
+            listBox.SelectedItems.Add(item);
+        }
+        listBox.SelectionChanged += OnlistBoxSelectionChanged;
     }
 
 }

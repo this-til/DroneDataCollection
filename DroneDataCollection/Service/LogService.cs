@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Text;
 using HandyControl.Controls;
 using log4net.Appender;
@@ -12,9 +13,9 @@ public class LogService {
     public LogService() {
 
         //获取配置文件全称
-        string str = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name + ".Config.log4net.config";
+        string str = Assembly.GetExecutingAssembly().GetName().Name + ".Config.log4net.config";
         //读取配置文件
-        Stream? stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(str);
+        Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(str);
         XmlConfigurator.Configure(stream!);
     }
 
@@ -52,10 +53,10 @@ public class GrowlAppender : AppenderSkeleton {
             return;
         }
         if (loggingEvent.Level.Value >= Level.Error.Value) {
-            Growl.ErrorGlobal(loggingEvent.RenderedMessage + (loggingEvent.ExceptionObject as Exception)?.Message);
+            Growl.ErrorGlobal(loggingEvent.RenderedMessage + loggingEvent.ExceptionObject?.Message);
         }
         else if (loggingEvent.Level.Value >= Level.Warn.Value) {
-            Growl.WarningGlobal(loggingEvent.RenderedMessage + (loggingEvent.ExceptionObject as Exception)?.Message);
+            Growl.WarningGlobal(loggingEvent.RenderedMessage + loggingEvent.ExceptionObject?.Message);
         }
 
     }
