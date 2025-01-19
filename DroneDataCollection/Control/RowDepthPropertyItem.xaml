@@ -9,7 +9,8 @@
                                        mc:Ignorable="d"
                                        d:DesignWidth="800">
 
-    <GroupBox Style="{StaticResource GroupBoxOriginal}"
+    <GroupBox x:Name="groupBox"
+              Style="{StaticResource GroupBoxOriginal}"
               Margin="0,6,0,6"
               hc:TitleElement.TitlePlacement="Left"
               hc:TitleElement.TitleWidth="200">

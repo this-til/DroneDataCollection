@@ -1,31 +1,21 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Data;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Data.Analysis;
 
 namespace DroneDataCollection;
 
-[ObservableObject]
-public partial class DataFrameGrid {
+public partial class ChartData {
 
-    [ObservableProperty]
-    public DataFrame dataFrame = new DataFrame();
-
-    public DataFrameGrid() {
+    public ChartData() {
         InitializeComponent();
-        this.DataContextChanged += onDataContextChanged;
     }
 
-    private void onDataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
-        if (e.NewValue is not DataFrame dataFrame) {
+    protected override void OnDataFrameChanging(DataFrame? value) {
+        dataGrid.Columns.Clear();
+
+        if (value is null) {
             return;
         }
-        DataFrame = dataFrame;
-    }
-
-    partial void OnDataFrameChanging(DataFrame value) {
-        Columns.Clear();
 
         foreach (DataFrameColumn dataFrameColumn in value.Columns) {
 
@@ -56,11 +46,10 @@ public partial class DataFrameGrid {
             column.Header = dataFrameColumn.Name;
             column.IsReadOnly = true;
 
-            Columns.Add(column);
+            dataGrid.Columns.Add(column);
         }
 
-        ItemsSource = value.Rows;
+        dataGrid.ItemsSource = value.Rows;
     }
 
 }
-

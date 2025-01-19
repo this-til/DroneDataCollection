@@ -1,8 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using HandyControl.Controls;
 using Microsoft.Data.Analysis;
 
 namespace DroneDataCollection;
@@ -11,134 +10,134 @@ namespace DroneDataCollection;
 public partial class DataVisualizationPanel {
 
     [ObservableProperty]
-    public partial DataExtractor dataExtractor { get; set; } = new DataExtractor();
+    public partial DataVisualization dataVisualization { get; set; } = new DataVisualization();
 
     public DataVisualizationPanel() {
         InitializeComponent();
         this.DataContext = this;
+
+        App.instance.sqlService.closeConnectionDatabaseEvent += onSqlServiceOncloseConnectionDatabaseEvent;
+        App.instance.deviceService.loadDeviceComplete += onDeviceServiceOnloadDeviceComplete;
+    }
+
+    private void onDeviceServiceOnloadDeviceComplete() {
+        ObservableCollection<string> deviceItemsSource = dataVisualization.dataExtractor.device.itemsSource;
+        ObservableCollection<string> deviceSelectedItems = dataVisualization.dataExtractor.device.selectedItems;
+
+        deviceItemsSource.Clear();
+        foreach (string key in App.instance.deviceService.deviceIdMap.Keys) {
+            deviceItemsSource.Add(key);
+        }
+        if (deviceSelectedItems.Count <= 0 && deviceItemsSource.Count > 0) {
+            deviceSelectedItems.Add(deviceItemsSource[0]);
+        }
+    }
+
+    private void onSqlServiceOncloseConnectionDatabaseEvent() {
+        dataVisualization.dataExtractor.device.itemsSource.Clear();
     }
 
 }
 
-public partial class DataExtractor : ObservableObject {
-
-    private static List<string> fieldNames = new List<string> {
-        "id",
-        "device_id",
-        "time",
-        "ux",
-        "uy",
-        "uz",
-        "hx",
-        "hy",
-        "hz",
-        "t",
-        "x",
-        "y",
-        "h",
-        "x1",
-        "x2",
-        "la_h",
-        "gyro_1",
-        "gyro_2",
-        "gyro_3",
-        "gps_1",
-        "gps_2",
-        "gps_3"
-    };
+public partial class DataVisualization : ObservableObject {
 
     [ObservableProperty]
-    [PropertyEditor(typeof(DateTimePropertyEditor))]
-    public partial DateTime minTime { get; set; } = DateTime.MinValue;
+    [PropertyEditor(typeof(ObjectPropertyEditor))]
+    [DisplayName("数据导出")]
+    public partial DataExtractor dataExtractor { get; set; } = new DataExtractor();
 
     [ObservableProperty]
-    [PropertyEditor(typeof(DateTimePropertyEditor))]
-    public partial DateTime maxTime { get; set; } = DateTime.MaxValue;
+    [PropertyEditor(typeof(ObjectPropertyEditor))]
+    [DisplayName("数据修饰")]
+    public partial DataModification dataModification { get; set; } = new DataModification();
 
     [ObservableProperty]
-    [PropertyEditor(typeof(CheckComboBoxPropertyEditor))]
-    public partial CheckComboBoxProperty<string> device { get; set; } = new CheckComboBoxProperty<string>();
+    [PropertyEditor(typeof(ObjectPropertyEditor))]
+    [DisplayName("数据渲染")]
+    public partial DataRender dataRender { get; set; } = new DataRender();
 
     [ObservableProperty]
-    [PropertyEditor(typeof(CheckComboBoxPropertyEditor))]
-    public partial CheckComboBoxProperty<string> attentionField { get; set; } = new CheckComboBoxProperty<string>();
+    [PropertyEditor(typeof(ButtonEditor))]
+    [DisplayName("渲染")]
+    public partial RoutedEventHandler render { get; set; }
 
-    [ObservableProperty]
-    [PropertyEditor(typeof(PlainTextPropertyEditor))]
-    public partial string sql { get; set; } = string.Empty;
-
-    public DataExtractor() {
-        sql = generateSql();
-        PropertyChanged += OnPropertyChanged;
-        foreach (string fieldName in fieldNames) {
-            attentionField.itemsSource.Add(fieldName);
-            attentionField.selectedItems.Add(fieldName);
-        }
-    }
-
-    public string generateSql() {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.Append($"SELECT ({string.Join(',', attentionField.selectedItems)})\nFROM data");
-
-        List<int> deviceId = device.selectedItems
-            .Where(s => App.instance.deviceService.deviceIdMap.ContainsKey(s))
-            .Select(s => App.instance.deviceService.deviceIdMap[s])
-            .ToList();
-
-        string whereClause = string.Join
+    public DataVisualization() {
+        render = (o, r) => {
+            Task.Run
             (
-                " AND ",
-                new List<string> {
-                    $"time BETWEEN '{minTime:yyyy-MM-dd HH:mm:ss}' AND '{maxTime:yyyy-MM-dd HH:mm:ss}'",
-                    $"device_id IN ({string.Join(",", deviceId)})"
+                async () => {
+                    DataFrame dataFrame = await dataExtractor.extractor();
+                    dataFrame = await dataModification.modifiedDataFrame(dataFrame);
+
+                    MainWindow.mainWindow.Dispatcher.Invoke
+                    (
+                        () => {
+                            DataWindow dataWindow = new DataWindow();
+                            dataWindow.dataFrame = dataFrame;
+                            dataWindow.dataElement = dataRender.create();
+                            dataWindow.Show();
+                        }
+                    );
                 }
-            )
-            .Trim();
-
-        if (!string.IsNullOrEmpty(whereClause)) {
-            stringBuilder.Append("\nWHERE ").Append(whereClause);
-        }
-
-        return stringBuilder.ToString();
-
-    }
-
-    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-        if (e.PropertyName == nameof(sql)) {
-            return;
-        }
-        sql = generateSql();
+            );
+        };
     }
 
 }
 
-public partial class DataModificationBase : ObservableObject {
+public partial class DataRender : ObservableObject {
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(EnumPropertyEditor))]
+    [DisplayName("渲染类型")]
+    public partial DataRenderType dataRenderType { get; set; } = DataRenderType.chartData;
+
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e) {
+        base.OnPropertyChanged(e);
+        switch (e.PropertyName) {
+            case "dataRenderType":
+                lineConfigVisibility = false;
+                switch (dataRenderType) {
+                    case DataRenderType.chartData:
+                        break;
+                    case DataRenderType.lineChart:
+                        lineConfigVisibility = true;
+                        break;
+                }
+                break;
+        }
+    }
+
+    [ObservableProperty]
+    public partial bool lineConfigVisibility { get; set; } = false;
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(ObjectPropertyEditor))]
+    [DisplayName("折线图渲染配置")]
+    [Visibility]
+    public partial LineChartConfig lineConfig { get; set; } = new LineChartConfig();
+
+    public DataFrameGrid create() {
+        switch (dataRenderType) {
+            case DataRenderType.chartData:
+                return new ChartData();
+            case DataRenderType.lineChart:
+                return new LineChartData();
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
 
 }
 
-public partial class TimeSplitting : DataModificationBase {
+public partial class LineChartConfig : ObservableObject {
 
-    [ObservableProperty]
-    [PropertyEditor(typeof(PlainTextPropertyEditor))]
-    public partial string columnName { get; set; } = "time";
+}
 
-    [ObservableProperty]
-    [PropertyEditor(typeof(PlainTextPropertyEditor))]
-    public partial string dataColumnName { get; set; } = "time";
+public enum DataRenderType {
 
-    [ObservableProperty]
-    [PropertyEditor(typeof(PlainTextPropertyEditor))]
-    public partial string timeColumnName { get; set; } = "time";
+    chartData,
 
-    [ObservableProperty]
-    [PropertyEditor(typeof(PlainTextPropertyEditor))]
-    public partial string dataFormat { get; set; } = "yyyyMMdd";
+    lineChart
 
-    [ObservableProperty]
-    [PropertyEditor(typeof(PlainTextPropertyEditor))]
-    public partial string timeFormat { get; set; } = "HHmmss";
-
-    
-    
 }

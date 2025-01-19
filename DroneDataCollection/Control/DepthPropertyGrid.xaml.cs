@@ -17,81 +17,48 @@ public partial class DepthPropertyGrid {
         InitializeComponent();
     }
 
-    public static readonly RoutedEvent SelectedObjectChangedEvent =
-        EventManager.RegisterRoutedEvent
-        (
-            "SelectedObjectChanged",
-            RoutingStrategy.Bubble,
-            typeof(RoutedPropertyChangedEventHandler<object>),
-            typeof(PropertyGrid)
-        );
-
-    public event RoutedPropertyChangedEventHandler<object> SelectedObjectChanged {
-        add => AddHandler(SelectedObjectChangedEvent, value);
-        remove => RemoveHandler(SelectedObjectChangedEvent, value);
-    }
-
     public static readonly DependencyProperty SelectedObjectProperty = DependencyProperty.Register
     (
         nameof(SelectedObject),
         typeof(object),
         typeof(DepthPropertyGrid),
-        new PropertyMetadata(null, OnSelectedObjectChanged)
+        new PropertyMetadata
+        (
+            null,
+            (d, e) => ((DepthPropertyGrid)d).UpdateItems(e.NewValue)
+        )
     );
-
-    private static void OnSelectedObjectChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-        var ctl = (DepthPropertyGrid)d;
-        ctl.OnSelectedObjectChanged(e.OldValue, e.NewValue);
-    }
 
     public object SelectedObject {
         get => GetValue(SelectedObjectProperty);
         set => SetValue(SelectedObjectProperty, value);
     }
 
-    protected virtual void OnSelectedObjectChanged(object oldValue, object newValue) {
-        UpdateItems(newValue);
-        RaiseEvent(new RoutedPropertyChangedEventArgs<object>(oldValue, newValue, SelectedObjectChangedEvent));
+    /*public Type BasicsType {
+        get => (Type)GetValue(BasicsTypeProperty);
+        set => SetValue(BasicsTypeProperty, value);
     }
 
-    public static readonly DependencyProperty DescriptionProperty = DependencyProperty.Register
+    public static readonly DependencyProperty BasicsTypeProperty = DependencyProperty.Register
     (
-        nameof(Description),
-        typeof(string),
+        nameof(BasicsType),
+        typeof(Type),
         typeof(DepthPropertyGrid),
-        new PropertyMetadata(default(string))
+        new PropertyMetadata(null)
     );
 
-    public string Description {
-        get => (string)GetValue(DescriptionProperty);
-        set => SetValue(DescriptionProperty, value);
+    public Type SelectedType {
+        get => (Type)GetValue(BasicsTypeProperty);
+        set => SetValue(BasicsTypeProperty, value);
     }
 
-    public static readonly DependencyProperty MaxTitleWidthProperty = DependencyProperty.Register
+    public static readonly DependencyProperty SelectedTypeProperty = DependencyProperty.Register
     (
-        nameof(MaxTitleWidth),
-        typeof(double),
+        nameof(SelectedType),
+        typeof(Type),
         typeof(DepthPropertyGrid),
-        new PropertyMetadata(0d)
-    );
-
-    public double MaxTitleWidth {
-        get => (double)GetValue(MaxTitleWidthProperty);
-        set => SetValue(MaxTitleWidthProperty, value);
-    }
-
-    public static readonly DependencyProperty MinTitleWidthProperty = DependencyProperty.Register
-    (
-        nameof(MinTitleWidth),
-        typeof(double),
-        typeof(DepthPropertyGrid),
-        new PropertyMetadata(0d)
-    );
-
-    public double MinTitleWidth {
-        get => (double)GetValue(MinTitleWidthProperty);
-        set => SetValue(MinTitleWidthProperty, value);
-    }
+        new PropertyMetadata(null)
+    );*/
 
     public override void OnApplyTemplate() {
         base.OnApplyTemplate();
@@ -99,9 +66,6 @@ public partial class DepthPropertyGrid {
     }
 
     private void UpdateItems(object obj) {
-        if (obj == null) {
-            return;
-        }
         stackPanel.Children.Clear();
 
         foreach (DepthPropertyItem propertyItem in TypeDescriptor.GetProperties(obj.GetType())
@@ -117,32 +81,13 @@ public partial class DepthPropertyGrid {
                                  return null!;
                              }
                              DepthPropertyItem depthPropertyItem = propertyEditorBase.CreateElement(item, obj);
-                             propertyEditorBase.Stowage(depthPropertyItem, item);
+                             propertyEditorBase.Stowage(depthPropertyItem, item, obj);
                              return depthPropertyItem;
                          }
                      )
                      .Where(e => e != null)) {
             stackPanel.Children.Add(propertyItem);
         }
-    }
-
-    protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
-        base.OnRenderSizeChanged(sizeInfo);
-        TitleElement.SetTitleWidth(this, new GridLength(Math.Max(MinTitleWidth, Math.Min(MaxTitleWidth, ActualWidth / 3))));
-    }
-
-}
-
-public static class PropertyItemExtend {
-
-    public static readonly DependencyProperty TitlePlacementProperty = DependencyProperty.Register("TitlePlacement", typeof(TitlePlacementType), typeof(PropertyItem), new PropertyMetadata(TitlePlacementType.Left));
-
-    public static void SetTitlePlacementType(DependencyObject element, TitlePlacementType value) {
-        element.SetValue(TitlePlacementProperty, value);
-    }
-
-    public static TitlePlacementType GetTitlePlacementType(DependencyObject element) {
-        return (TitlePlacementType)element.GetValue(TitlePlacementProperty);
     }
 
 }

@@ -135,10 +135,6 @@
 
     <Style x:Key="DepthPropertyGridBaseStyle"
            TargetType="droneDataCollection:DepthPropertyGrid">
-        <Setter Property="MaxTitleWidth"
-                Value="200"/>
-        <Setter Property="MinTitleWidth"
-                Value="120"/>
         <Setter Property="Focusable"
                 Value="False"/>
         <Setter Property="Padding"

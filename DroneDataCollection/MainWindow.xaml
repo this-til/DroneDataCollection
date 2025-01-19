@@ -1,29 +1,37 @@
-﻿<Window
-    x:Name="Window"
-    x:Class="DroneDataCollection.MainWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:hc="https://handyorg.github.io/handycontrol"
-    xmlns:self="clr-namespace:DroneDataCollection"
-    mc:Ignorable="d"
-    Title="MainWindow" Height="720" Width="1280">
+﻿<Window x:Name="Window"
+        x:Class="DroneDataCollection.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:self="clr-namespace:DroneDataCollection"
+        mc:Ignorable="d"
+        Title="MainWindow"
+        Height="720"
+        Width="1280">
 
     <Grid>
-        <TabControl x:Name="tabControl" Margin="10" Style="{StaticResource TabControlCapsuleSolid}">
-            <TabItem x:Name="databaseTabItem" Header="数据库">
+        <TabControl x:Name="tabControl"
+                    Margin="10"
+                    Style="{StaticResource TabControlCapsuleSolid}">
+            <TabItem x:Name="databaseTabItem"
+                     Header="数据库">
                 <self:DatabasePanel x:Name="databasePanel"></self:DatabasePanel>
             </TabItem>
-            <TabItem x:Name="deviceTabItem" Header="设备">
+            <TabItem x:Name="deviceTabItem"
+                     Header="设备">
                 <self:DevicePanel></self:DevicePanel>
             </TabItem>
-            <TabItem x:Name="dataVisualizationTabItem" Header="数据可视化">
+            <TabItem x:Name="dataVisualizationTabItem"
+                     Header="数据可视化">
                 <self:DataVisualizationPanel></self:DataVisualizationPanel>
             </TabItem>
-            <TabItem x:Name="dataExportTabItem" Header="数据导出">
+            <TabItem x:Name="dataExportTabItem"
+                     Header="数据导出">
             </TabItem>
-            <TabItem x:Name="consolePanelTabItem" Header="控制台">
+            <TabItem x:Name="consolePanelTabItem"
+                     Header="控制台">
                 <self:ConsolePanel x:Name="consolePanel"> </self:ConsolePanel>
             </TabItem>
         </TabControl>

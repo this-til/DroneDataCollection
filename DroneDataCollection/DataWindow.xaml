@@ -1,0 +1,34 @@
+﻿<Window x:Class="DroneDataCollection.DataWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:DroneDataCollection"
+        mc:Ignorable="d"
+        Title="DataWindow"
+        Height="450"
+        Width="800">
+    
+    
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <StackPanel Margin="6,6,6,6"
+                    Orientation="Horizontal">
+            <Button Content="导出为csv"/>
+        </StackPanel>
+        
+        
+        <ContentPresenter Grid.Row="1"
+                          Grid.Column="0"
+                          Margin="6,6,6,6"
+                          Content="{Binding dataElement}"/>
+    </Grid>
+
+
+
+</Window>

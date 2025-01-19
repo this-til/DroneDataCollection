@@ -10,18 +10,12 @@
              d:DesignHeight="450"
              d:DesignWidth="800"
              Focusable="False"
-             Margin="0,6,0,6">
+             Margin="6,6,6,6">
 
 
-    <hc:ScrollViewer Focusable="False"
-                     HorizontalScrollBarVisibility="Disabled"
-                     CanContentScroll="False"
-                     Margin="0,6,0,6">
-        <StackPanel x:Name="stackPanel"
-                    Orientation="Vertical">
-
-        </StackPanel>
-    </hc:ScrollViewer>
+    <StackPanel x:Name="stackPanel"
+                Orientation="Vertical">
+    </StackPanel>
     
 
 

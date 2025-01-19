@@ -2,6 +2,7 @@
 using System.Windows;
 using HandyControl.Controls;
 using log4net;
+using Microsoft.Data.Analysis;
 using MySql.Data.MySqlClient;
 
 namespace DroneDataCollection;
@@ -46,23 +47,27 @@ public class SqlService : DependencyObject {
         Growl.SuccessGlobal("数据库链接已关闭。");
     }
 
-    public async Task query(string sql, Action<DbDataReader> readerAction) {
+    public async Task<DbDataReader> query(string sql) {
         if (sqlConnection is null) {
             throw new InvalidOperationException("sqlConnection is null");
         }
-        await using MySqlCommand cmd = new MySqlCommand(sql, sqlConnection);
-
-        DbDataReader reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync()) {
-            readerAction(reader);
-        }
+        MySqlCommand cmd = new MySqlCommand(sql, sqlConnection);
+        return await cmd.ExecuteReaderAsync();
 
     }
 
     public async Task<List<C>> query<C>(string sql) where C : class {
         List<C> result = new List<C>();
-        await query(sql, reader => result.Add((C)Activator.CreateInstance(typeof(C), reader)!));
+        await using DbDataReader dbDataReader = await query(sql);
+        while (await dbDataReader.ReadAsync()) {
+            result.Add((C)Activator.CreateInstance(typeof(C), dbDataReader)!);
+        }
         return result;
+    }
+
+    public async Task<DataFrame> queryToDataFrame(string sql) {
+        await using DbDataReader dbDataReader = await query(sql);
+        return await DataFrame.LoadFrom(dbDataReader);
     }
 
 }

@@ -11,6 +11,10 @@ public partial class DeviceService : ObservableObject {
 
     public Dictionary<string, int> deviceIdMap { get; } = new Dictionary<string, int>();
 
+    public Dictionary<int, string> idMap { get; } = new Dictionary<int, string>();
+
+    public event Action? loadDeviceComplete;
+
     public DeviceService() {
         App.instance.sqlService.linkedDatabaseEvent += sqlServiceOnlinkedDatabaseEvent;
         App.instance.sqlService.closeConnectionDatabaseEvent += sqlServiceOncloseConnectionDatabaseEvent;
@@ -26,6 +30,7 @@ public partial class DeviceService : ObservableObject {
                 List<Device> devices = await App.instance.sqlService.query<Device>("SELECT * FROM device");
                 foreach (Device device in devices) {
                     deviceIdMap.TryAdd(device.host_name, device.id);
+                    idMap.TryAdd(device.id, device.host_name);
                 }
                 App.instance.Dispatcher.Invoke
                 (
@@ -43,6 +48,7 @@ public partial class DeviceService : ObservableObject {
                             };
                             runTimeDeviceCollection.Add(runTimeDevice);
                             Task.Run(() => monitoringDevice(runTimeDevice));
+                            loadDeviceComplete?.Invoke();
                         }
                     }
                 );
