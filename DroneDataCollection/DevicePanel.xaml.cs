@@ -10,7 +10,6 @@ public partial class DevicePanel {
         get => App.instance.deviceService;
     }
 
-
     public DevicePanel() {
         InitializeComponent();
         this.DataContext = this;
@@ -29,6 +28,9 @@ public partial class DevicePanel {
             case "delete":
                 break;
         }
+    }
+
+    private void onClickAddDevice(object sender, RoutedEventArgs e) {
     }
 
 }

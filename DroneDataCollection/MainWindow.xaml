@@ -27,9 +27,6 @@
                      Header="数据可视化">
                 <self:DataVisualizationPanel></self:DataVisualizationPanel>
             </TabItem>
-            <TabItem x:Name="dataExportTabItem"
-                     Header="数据导出">
-            </TabItem>
             <TabItem x:Name="consolePanelTabItem"
                      Header="控制台">
                 <self:ConsolePanel x:Name="consolePanel"> </self:ConsolePanel>

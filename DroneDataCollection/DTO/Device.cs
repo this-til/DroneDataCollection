@@ -9,6 +9,8 @@ public class Device {
 
     public string host_name { get; set; } = String.Empty;
 
+    public string ip { get; set; } = String.Empty;
+
     public bool deleted { get; set; }
 
     public DateTime synchronization_time { get; set; }
@@ -21,9 +23,8 @@ public class Device {
     public Device(DbDataReader reader) {
         id = reader.GetInt32("id");
         host_name = reader.GetString("host_name");
-
+        ip = reader.GetString("ip");
         deleted = !reader.IsDBNull("deleted") && reader.GetBoolean("deleted");
-
         synchronization_time = reader.IsDBNull("synchronization_time")
             ? default
             : reader.GetDateTime("synchronization_time");

@@ -1,10 +1,16 @@
-﻿using System.Windows;
+﻿using System.Net.Mime;
+using System.Windows;
 using System.Windows.Data;
+using log4net;
 using Microsoft.Data.Analysis;
+using Microsoft.Identity.Client;
+using Microsoft.Win32;
 
 namespace DroneDataCollection;
 
 public partial class DataWindow {
+
+    public ILog log = LogManager.GetLogger(typeof(DataWindow));
 
     public static readonly DependencyProperty dataFrameProperty = DependencyProperty.Register
     (
@@ -52,6 +58,43 @@ public partial class DataWindow {
     public DataWindow() {
         InitializeComponent();
         this.DataContext = this;
+    }
+
+    private void onClickOutCsv(object sender, RoutedEventArgs e) {
+
+        /*Task.Run
+        (
+            async () => {
+                SaveFileDialog dlg = new SaveFileDialog();
+                dlg.OverwritePrompt = true;
+                dlg.Title = "保存数据";
+                if (dlg.ShowDialog(MainWindow.mainWindow) == true) {
+                    string dlgFileName = dlg.FileName;
+                    log.Debug(dlgFileName);
+                }
+
+            }
+        );*/
+
+        /*Thread thread = new Thread
+        (
+            () => {
+                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+                dlg.OverwritePrompt = true;
+                dlg.Title = "保存数据";
+                dlg.DefaultExt = ".csv";
+                dlg.Filter = "txt files(*.txt)|*.txt|csv files(*.csv)|*.csv|All files(*.*)|*.*";
+                dlg.RestoreDirectory = true;
+                dlg.InitialDirectory = "C:\\";
+                if (dlg.ShowDialog() == true) {
+                    string dlgFileName = dlg.FileName;
+                    log.Debug(dlgFileName);
+                }
+            }
+        );
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();*/
     }
 
 }

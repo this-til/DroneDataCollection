@@ -8,27 +8,8 @@
         Title="DataWindow"
         Height="450"
         Width="800">
-    
-    
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        
-        <StackPanel Margin="6,6,6,6"
-                    Orientation="Horizontal">
-            <Button Content="导出为csv"/>
-        </StackPanel>
-        
-        
-        <ContentPresenter Grid.Row="1"
-                          Grid.Column="0"
-                          Margin="6,6,6,6"
-                          Content="{Binding dataElement}"/>
-    </Grid>
 
 
-
+    <ContentPresenter Margin="6,6,6,6"
+                      Content="{Binding dataElement}"/>
 </Window>

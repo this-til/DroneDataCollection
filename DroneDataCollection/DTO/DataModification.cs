@@ -11,7 +11,7 @@ public partial class DataModification : ObservableObject {
     [ObservableProperty]
     [PropertyEditor(typeof(SwitchPropertyEditor))]
     [DisplayName("启用日期时间拆分")]
-    public partial bool timeSplittingVisibility { get; set; } = true;
+    public partial bool timeSplittingVisibility { get; set; }
 
     [ObservableProperty]
     [PropertyEditor(typeof(ObjectPropertyEditor))]

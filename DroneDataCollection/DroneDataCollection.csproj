@@ -11,7 +11,9 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageReference Include="FluentFTP" Version="52.0.0" />
         <PackageReference Include="HandyControl" Version="3.5.1" />
+        <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
         <PackageReference Include="log4net" Version="3.0.3" />
         <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.0-preview3.24332.3" />
         <PackageReference Include="MySql.Data" Version="9.1.0" />

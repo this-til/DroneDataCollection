@@ -16,6 +16,10 @@ public abstract partial class DataFrameGrid : UserControl {
         new PropertyMetadata(new DataFrame(), (o, args) => ((DataFrameGrid)o).OnDataFrameChanging(args.NewValue as DataFrame))
     );
 
+    protected DataFrameGrid() {
+        this.DataContext = this;
+    }
+
     public DataFrame dataFrame {
         get => (DataFrame)GetValue(dataFrameProperty);
         set => SetValue(dataFrameProperty, value);

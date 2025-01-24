@@ -37,6 +37,29 @@ public partial class DataVisualizationPanel {
         dataVisualization.dataExtractor.device.itemsSource.Clear();
     }
 
+    private void onClickRender(object sender, RoutedEventArgs e) {
+        Task.Run
+        (
+            async () => {
+                DataFrame dataFrame = await dataVisualization.createDataFrame();
+
+                Dispatcher.Invoke
+                (
+                    () => {
+                        DataWindow dataWindow = new DataWindow();
+                        dataWindow.dataFrame = dataFrame;
+                        dataWindow.dataElement = dataVisualization.dataRender.create();
+                        dataWindow.Show();
+                    }
+                );
+            }
+        );
+    }
+
+    private void onClickExportCSV(object sender, RoutedEventArgs e) {
+
+    }
+
 }
 
 public partial class DataVisualization : ObservableObject {
@@ -56,31 +79,10 @@ public partial class DataVisualization : ObservableObject {
     [DisplayName("数据渲染")]
     public partial DataRender dataRender { get; set; } = new DataRender();
 
-    [ObservableProperty]
-    [PropertyEditor(typeof(ButtonEditor))]
-    [DisplayName("渲染")]
-    public partial RoutedEventHandler render { get; set; }
-
-    public DataVisualization() {
-        render = (o, r) => {
-            Task.Run
-            (
-                async () => {
-                    DataFrame dataFrame = await dataExtractor.extractor();
-                    dataFrame = await dataModification.modifiedDataFrame(dataFrame);
-
-                    MainWindow.mainWindow.Dispatcher.Invoke
-                    (
-                        () => {
-                            DataWindow dataWindow = new DataWindow();
-                            dataWindow.dataFrame = dataFrame;
-                            dataWindow.dataElement = dataRender.create();
-                            dataWindow.Show();
-                        }
-                    );
-                }
-            );
-        };
+    public async Task<DataFrame> createDataFrame() {
+        DataFrame dataFrame = await dataExtractor.extractor();
+        dataFrame = await dataModification.modifiedDataFrame(dataFrame);
+        return dataFrame;
     }
 
 }
@@ -122,7 +124,10 @@ public partial class DataRender : ObservableObject {
             case DataRenderType.chartData:
                 return new ChartData();
             case DataRenderType.lineChart:
-                return new LineChartData();
+                LineChartData lineChartData = new LineChartData();
+                lineChartData.xAxleColumnName = lineConfig.xAxleColumnName;
+                lineChartData.deviceColumnName = lineConfig.deviceColumnName;
+                return lineChartData;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -131,6 +136,16 @@ public partial class DataRender : ObservableObject {
 }
 
 public partial class LineChartConfig : ObservableObject {
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(PlainTextPropertyEditor))]
+    [DisplayName("x轴列名")]
+    public partial string xAxleColumnName { get; set; } = "time";
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(PlainTextPropertyEditor))]
+    [DisplayName("设备列")]
+    public partial string deviceColumnName { get; set; } = "device";
 
 }
 

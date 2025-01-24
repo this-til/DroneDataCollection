@@ -13,9 +13,25 @@
 
     </UserControl.Resources>
 
-    <ScrollViewer>
-        <local:DepthPropertyGrid SelectedObject="{Binding dataVisualization}">
-        </local:DepthPropertyGrid>
-    </ScrollViewer>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal"
+                    Margin="6,6,6,6">
+            <Button Margin="3,3,3,3"
+                    Content="渲染"
+                    Click="onClickRender"/>
+            <Button Margin="3,3,3,3"
+                    Content="导出Csv"
+                    Click="onClickExportCSV"/>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1">
+            <local:DepthPropertyGrid SelectedObject="{Binding dataVisualization}">
+            </local:DepthPropertyGrid>
+        </ScrollViewer>
+    </Grid>
+
 
 </UserControl>

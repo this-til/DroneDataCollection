@@ -2,61 +2,14 @@
 using System.ComponentModel;
 using System.Data.Common;
 using System.Text;
+using System.Windows.Documents;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Data.Analysis;
 
 namespace DroneDataCollection;
 
 public partial class DataExtractor : ObservableObject {
-
-    private static List<string> fieldNames = new List<string> {
-        "id",
-        "device_id",
-        "time",
-        "ux",
-        "uy",
-        "uz",
-        "hx",
-        "hy",
-        "hz",
-        "t",
-        "x",
-        "y",
-        "h",
-        "x1",
-        "x2",
-        "la_h",
-        "gyro_1",
-        "gyro_2",
-        "gyro_3",
-        "gps_1",
-        "gps_2",
-        "gps_3"
-    };
-
-    private static List<string> outFieldNames = new List<string> {
-        "device_id",
-        "time",
-        "ux",
-        "uy",
-        "uz",
-        "hx",
-        "hy",
-        "hz",
-        "t",
-        "x",
-        "y",
-        "h",
-        "x1",
-        "x2",
-        "la_h",
-        "gyro_1",
-        "gyro_2",
-        "gyro_3",
-        "gps_1",
-        "gps_2",
-        "gps_3"
-    };
+    
 
     [ObservableProperty]
     [PropertyEditor(typeof(DateTimePropertyEditor))]
@@ -92,10 +45,10 @@ public partial class DataExtractor : ObservableObject {
         attentionField.selectedItems.CollectionChanged += OnPropertyChanged;
         attentionField.itemsSource.CollectionChanged += OnPropertyChanged;
 
-        foreach (string fieldName in fieldNames) {
+        foreach (string fieldName in Presets.fieldNames) {
             attentionField.itemsSource.Add(fieldName);
         }
-        foreach (string outFieldName in outFieldNames) {
+        foreach (string outFieldName in Presets.outFieldNames) {
             attentionField.selectedItems.Add(outFieldName);
         }
     }
