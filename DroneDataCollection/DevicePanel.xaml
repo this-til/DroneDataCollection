@@ -14,15 +14,21 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <!--<StackPanel Orientation="Horizontal"
+        <StackPanel Orientation="Horizontal"
                     Margin="6,6,6,6">
             <Button Margin="3,3,3,3"
                     Content="新建设备"
-                    Click="onClickAddDevice"/>
-        </StackPanel>-->
+                    Click="onClickAddDevice"
+                    Style="{StaticResource ButtonPrimary}"/>
+            <Button Margin="3,3,3,3"
+                    Content="删除选中设备"
+                    Click="onClickDeleteDevice"
+                    Style="{StaticResource ButtonDanger}"/>
+        </StackPanel>
         <DataGrid Grid.Row="1"
+                  x:Name="deviceGrid"
                   HeadersVisibility="All"
-                  CanUserAddRows="True"
+                  CanUserAddRows="False"
                   AutoGenerateColumns="False"
                   ItemsSource="{Binding deviceService.runTimeDeviceCollection}">
             <DataGrid.Columns>
@@ -33,6 +39,9 @@
                                     Binding="{Binding synchronizationTime}"/>
                 <DataGridTextColumn Header="IP"
                                     Binding="{Binding ip}"/>
+                <DataGridTextColumn Header="状态"
+                                    IsReadOnly="True"
+                                    Binding="{Binding state}"/>
                 <DataGridTextColumn Header="error"
                                     IsReadOnly="True"
                                     Binding="{Binding error}"/>
