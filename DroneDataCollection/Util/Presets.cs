@@ -75,4 +75,27 @@ public class Presets {
         "gps_3"
     };
 
+    
+    public static List<string> insertDataField = new List<string> {
+        "time",
+        "ux",
+        "uy",
+        "uz",
+        "hx",
+        "hy",
+        "hz",
+        "t",
+        "x",
+        "y",
+        "h",
+        "x1",
+        "x2",
+        "la_h",
+        "gyro_1",
+        "gyro_2",
+        "gyro_3",
+        "gps_1",
+        "gps_2",
+        "gps_3"
+    };
 }

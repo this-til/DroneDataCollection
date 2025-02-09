@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Security.Policy;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Data.Analysis;
+using Microsoft.Win32;
 
 namespace DroneDataCollection;
 
@@ -57,6 +59,21 @@ public partial class DataVisualizationPanel {
     }
 
     private void onClickExportCSV(object sender, RoutedEventArgs e) {
+
+        Task.Run
+        (
+            async () => {
+                OpenFileDialog dlg = new OpenFileDialog();
+                dlg.Title = "导出CSV";
+                dlg.FileName = "Data.csv";
+                dlg.DefaultExt = ".csv";
+                dlg.Filter = "CSV|*.csv|All files (*.*)|*.*";
+                dlg.InitialDirectory = @"c:\";
+                dlg.RestoreDirectory = true;
+
+
+            }
+        );
 
     }
 

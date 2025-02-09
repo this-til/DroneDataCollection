@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Data.Analysis;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace DroneDataCollection;
 

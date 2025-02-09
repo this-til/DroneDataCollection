@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Threading;
 using log4net;
+using Application = System.Windows.Application;
 
 namespace DroneDataCollection;
 
@@ -34,6 +35,16 @@ public partial class App : Application {
         deviceService = new DeviceService();
         propertyEditorService = new PropertyEditorService();
         Startup += onStartupEventHandler;
+
+        /*Task.Run
+        (
+            async () => {
+                while (true) {
+                    await Task.Delay(1000);
+                    GC.Collect();
+                }
+            }
+        );*/
     }
 
     private void onStartupEventHandler(object sender, StartupEventArgs args) {

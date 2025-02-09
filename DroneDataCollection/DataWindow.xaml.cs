@@ -1,10 +1,7 @@
-﻿using System.Net.Mime;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Data;
 using log4net;
 using Microsoft.Data.Analysis;
-using Microsoft.Identity.Client;
-using Microsoft.Win32;
 
 namespace DroneDataCollection;
 
@@ -47,7 +44,7 @@ public partial class DataWindow {
         (
             dataFrameGrid,
             DataFrameGrid.dataFrameProperty,
-            new Binding(nameof(dataFrame)) {
+            new System.Windows.Data.Binding(nameof(dataFrame)) {
                 Source = this,
                 Mode = BindingMode.TwoWay,
             }

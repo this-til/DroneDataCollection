@@ -19,22 +19,16 @@
         <PackageReference Include="MySql.Data" Version="9.1.0" />
         <PackageReference Include="YamlDotNet" Version="16.3.0" />
         <PackageReference Include="LiveCharts" Version="0.9.7" />
-        <PackageReference Include="Til.Lombok" Version="2.0.1" />
+        <PackageReference Include="Til.Lombok" Version="2.0.8" />
         <PackageReference Include="Microsoft.Data.Analysis" Version="0.22.0" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Include="Config\log4net.config" />
-      <EmbeddedResource Remove="Controls\**" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="Controls\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Page Remove="Controls\**" />
-      <Page Update="DataVisualization\ChartDataVisualization.xaml">
+        <Page Update="DataVisualization\ChartDataVisualization.xaml">
         <Generator>MSBuild:Compile</Generator>
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>
@@ -52,9 +46,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Controls\**" />
-      <None Remove="Control\DepthPropertyGrid.xaml.cs~" />
-      <None Remove="Control\DepthPropertyItem.xaml.cs~" />
+      <None Update="libvk7016n.dll" >
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="libvk7016n.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+    
     
 </Project>

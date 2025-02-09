@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Text;
 using HandyControl.Controls;
+using HandyControl.Data;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Core;
@@ -53,7 +54,11 @@ public class GrowlAppender : AppenderSkeleton {
             return;
         }
         if (loggingEvent.Level.Value >= Level.Error.Value) {
-            Growl.ErrorGlobal(loggingEvent.RenderedMessage + loggingEvent.ExceptionObject?.Message);
+            Growl.ErrorGlobal(new GrowlInfo() {
+                Message = loggingEvent.RenderedMessage + loggingEvent.ExceptionObject?.Message,
+                StaysOpen = false,
+                IsCustom = true,
+            });
         }
         else if (loggingEvent.Level.Value >= Level.Warn.Value) {
             Growl.WarningGlobal(loggingEvent.RenderedMessage + loggingEvent.ExceptionObject?.Message);

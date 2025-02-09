@@ -14,15 +14,15 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal"
+        <!--<StackPanel Orientation="Horizontal"
                     Margin="6,6,6,6">
             <Button Margin="3,3,3,3"
                     Content="新建设备"
                     Click="onClickAddDevice"/>
-        </StackPanel>
+        </StackPanel>-->
         <DataGrid Grid.Row="1"
                   HeadersVisibility="All"
-                  CanUserAddRows="False"
+                  CanUserAddRows="True"
                   AutoGenerateColumns="False"
                   ItemsSource="{Binding deviceService.runTimeDeviceCollection}">
             <DataGrid.Columns>

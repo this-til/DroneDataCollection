@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FluentFTP;
+using HandyControl.Controls;
 using log4net;
 using Microsoft.Data.Analysis;
 using MySql.Data.MySqlClient;
@@ -36,7 +37,7 @@ public partial class DeviceService : ObservableObject {
         App.instance.Exit += mainWindowOnClosed;
 
         timer = new DispatcherTimer();
-        timer.Interval = TimeSpan.FromSeconds(1);
+        timer.Interval = TimeSpan.FromSeconds(5);
         timer.Tick += timerTick;
         timer.Start();
     }
@@ -50,7 +51,15 @@ public partial class DeviceService : ObservableObject {
                     t => {
                         App.instance.Dispatcher.Invoke
                         (
-                            () => { runTimeDevice.error = t.Exception?.InnerException?.Message ?? t.Exception?.Message ?? string.Empty; }
+                            () => {
+                                string? error = t.Exception?.InnerException?.Message ?? t.Exception?.Message;
+                                if (error is not null) {
+                                    runTimeDevice.error = error;
+                                }
+                                if (t.Exception?.InnerException != null) {
+                                    log.Error(t.Exception.InnerException.Message, t.Exception.InnerException);
+                                }
+                            }
                         );
                     }
                 );
@@ -92,11 +101,22 @@ public partial class DeviceService : ObservableObject {
 
     }
 
+    private void sqlServiceOncloseConnectionDatabaseEvent() {
+        foreach (RunTimeDevice runTimeDevice in runTimeDeviceCollection) {
+            runTimeDevice.cancellationTokenSource.Cancel();
+        }
+        runTimeDeviceCollection.Clear();
+    }
+
     private async Task monitoringDevice(RunTimeDevice device) {
 
         IntPtr vk7016N_createNetworkContext = libvk7016n.VK7016N_CreateNetworkContext(Marshal.StringToHGlobalAnsi(device.ip));
         if (device.VK7016N == IntPtr.Zero) {
-            throw new Exception("Could not create network context");
+            App.instance.Dispatcher.Invoke
+            (
+                () => { device.error = "Could not create network context"; }
+            );
+            return;
         }
 
         device.saveDir = Marshal.PtrToStringUTF8(libvk7016n.VK7016N_GetSaveDir(vk7016N_createNetworkContext)) ?? string.Empty;
@@ -127,70 +147,72 @@ public partial class DeviceService : ObservableObject {
                     }
                 )
                 .Where(c => c.time > device.synchronizationTime)
+                .OrderBy(c => c.time)
                 .ToList();
 
-            if (valueTuples.Count < 2) {
-                continue;
+            int result = libvk7016n.VK7016N_SetOfflineSave(vk7016N_createNetworkContext, 0);
+            if (result < 0) {
+                throw new Exception("Set offline save disable failed");
             }
 
-            (FtpListItem, DateTime) valueTuple = valueTuples[^1];
-            FtpListItem ftpListItem = valueTuple.Item1;
-            DateTime dateTime = valueTuple.Item2;
+            try {
+                foreach ((FtpListItem ftpListItem, DateTime dateTime) in valueTuples) {
 
-            byte[] downloadBytes = await asyncFtpClient.DownloadBytes(ftpListItem.FullName, CancellationToken.None);
+                    byte[] downloadBytes = await asyncFtpClient.DownloadBytes(ftpListItem.FullName, CancellationToken.None);
 
-            DataFrame dataFrame = DataFrame.LoadCsv
-            (
-                Encoding.UTF8.GetString(downloadBytes),
-                ',',
-                false,
-                Presets.dataField.ToArray()
-            );
+                    DataFrame dataFrame = DataFrame.LoadCsv
+                    (
+                        Encoding.UTF8.GetString(downloadBytes),
+                        ',',
+                        false,
+                        Presets.dataField.ToArray()
+                    );
 
-            dataFrame = await new TimeMerging().modifiedDataFrame(dataFrame);
+                    dataFrame = await new TimeMerging().modifiedDataFrame(dataFrame);
 
-            await using (MySqlTransaction transaction = await App.instance.sqlService.sqlConnection.BeginTransactionAsync()) {
+                    await using MySqlTransaction transaction = await App.instance.sqlService.sqlConnection.BeginTransactionAsync();
 
-                long rowsCount = dataFrame.Rows.Count;
-                for (int i = 0; i < rowsCount; i++) {
-                    MySqlCommand cmd = new MySqlCommand
+                    long rowsCount = dataFrame.Rows.Count;
+                    for (int i = 0; i < rowsCount; i++) {
+                        await using MySqlCommand cmd = new MySqlCommand
+                        (
+                            $"""
+                             INSERT INTO data (device_id, {string.Join(',', Presets.insertDataField)}) 
+                             VALUES ({device.id}, {string.Join(',', dataFrame.Rows[i].Select(o => $"'{o}'"))})
+                             """,
+                            App.instance.sqlService.sqlConnection,
+                            transaction
+                        );
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+
+                    MySqlCommand command = new MySqlCommand
                     (
                         $"""
-                         INSERT INTO data (device_id, time, {string.Join(',', Presets.dataField)}) 
-                         VALUES ({device.id}, {string.Join(',', dataFrame.Rows[i])})
+                         UPDATE device 
+                         SET synchronization_time = '{dateTime + TimeSpan.FromSeconds(1)}'
+                         WHERE id = {device.id}
                          """,
                         App.instance.sqlService.sqlConnection,
                         transaction
                     );
-                    await cmd.ExecuteNonQueryAsync();
+
+                    await command.ExecuteNonQueryAsync();
+                    await transaction.CommitAsync();
                 }
 
-                MySqlCommand command = new MySqlCommand
-                (
-                    $"""
-                     UPDATE device 
-                     SET synchronization_time = {dateTime + TimeSpan.FromSeconds(1)}
-                     WHERE id = {device.id}
-                     """,
-                    App.instance.sqlService.sqlConnection,
-                    transaction
-                );
-                
-                await command.ExecuteNonQueryAsync();
-                await transaction.CommitAsync();
+            }
+            finally {
+                result = libvk7016n.VK7016N_SetOfflineSave(vk7016N_createNetworkContext, 1);
+                if (result < 0) {
+                    throw new Exception("Set offline save enable failed");
+                }
             }
 
-            Task.Delay(60000).Wait();
+            Task.Delay(600000).Wait();
 
         }
 
-    }
-
-    private void sqlServiceOncloseConnectionDatabaseEvent() {
-        foreach (RunTimeDevice runTimeDevice in runTimeDeviceCollection) {
-            runTimeDevice.cancellationTokenSource.Cancel();
-        }
-        runTimeDeviceCollection.Clear();
     }
 
     private void mainWindowOnClosed(object? sender, EventArgs e) {
@@ -225,5 +247,93 @@ public partial class RunTimeDevice : ObservableObject {
     public string saveDir = String.Empty;
 
     public AsyncFtpClient asyncFtpClient = null!;
+
+    partial void OnhostNameChanging(string value) {
+        if (!App.instance.deviceService.runTimeDeviceCollection.Contains(this)) {
+            return;
+        }
+
+        foreach (RunTimeDevice runTimeDevice in App.instance.deviceService.runTimeDeviceCollection) {
+            if (runTimeDevice == this) {
+                continue;
+            }
+            if (runTimeDevice.hostName.Equals(value)) {
+
+                string _hostName = hostName;
+                Task.Run
+                (
+                    () => {
+                        Task.FromResult(App.instance.Dispatcher.Invoke(() => hostName = _hostName));
+                        MessageBox.Show("无法重命名，名称重复", "ERROR");
+                    }
+                );
+
+                return;
+            }
+        }
+
+        if (App.instance.sqlService.sqlConnection is null) {
+            return;
+        }
+
+        Task.Run
+        (
+            async () => {
+                await using MySqlCommand command = new MySqlCommand
+                (
+                    $"""
+                     UPDATE device 
+                     SET host_name = '{value}'
+                     WHERE id = {id}
+                     """,
+                    App.instance.sqlService.sqlConnection
+                );
+                await command.ExecuteNonQueryAsync();
+            }
+        );
+    }
+
+    partial void OnipChanging(string value) {
+        if (!App.instance.deviceService.runTimeDeviceCollection.Contains(this)) {
+            return;
+        }
+        foreach (RunTimeDevice runTimeDevice in App.instance.deviceService.runTimeDeviceCollection) {
+            if (runTimeDevice == this) {
+                continue;
+            }
+            if (runTimeDevice.ip.Equals(value)) {
+                string _ip = ip;
+                Task.Run
+                (
+                    () => {
+                        Task.FromResult(App.instance.Dispatcher.Invoke(() => ip = _ip));
+                        MessageBox.Show("无法重命名，ip重复", "ERROR");
+                    }
+                );
+
+                return;
+            }
+        }
+        if (App.instance.sqlService.sqlConnection is null) {
+            return;
+        }
+        Task.Run
+        (
+            async () => {
+                await using MySqlCommand command = new MySqlCommand
+                (
+                    $"""
+                     UPDATE device 
+                     SET ip = '{value}'
+                     WHERE id = {id}
+                     """,
+                    App.instance.sqlService.sqlConnection
+                );
+                await command.ExecuteNonQueryAsync();
+            }
+        );
+
+        cancellationTokenSource?.Cancel();
+    }
 
 }

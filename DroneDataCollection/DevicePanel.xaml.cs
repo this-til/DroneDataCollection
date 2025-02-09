@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Button = System.Windows.Controls.Button;
+using ButtonBase = System.Windows.Controls.Primitives.ButtonBase;
 
 namespace DroneDataCollection;
 
