@@ -1,5 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Security.Policy;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -39,7 +42,7 @@ public partial class DataVisualizationPanel {
         dataVisualization.dataExtractor.device.itemsSource.Clear();
     }
 
-    private void onClickRender(object sender, RoutedEventArgs e) {
+    /*private void onClickRender(object sender, RoutedEventArgs e) {
         Task.Run
         (
             async () => {
@@ -68,18 +71,29 @@ public partial class DataVisualizationPanel {
                 dlg.FileName = "Data.csv";
                 dlg.DefaultExt = ".csv";
                 dlg.Filter = "CSV|*.csv|All files (*.*)|*.*";
-                dlg.InitialDirectory = @"c:\";
                 dlg.RestoreDirectory = true;
 
+                if (dlg.ShowDialog() ?? false) {
 
+                }
             }
         );
 
-    }
+    }*/
 
 }
 
 public partial class DataVisualization : ObservableObject {
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(ObjectPropertyEditor))]
+    [DisplayName("数据渲染")]
+    public partial DataRender dataRender { get; set; } = new DataRender();
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(ObjectPropertyEditor))]
+    [DisplayName("导出为CSV")]
+    public partial DataSaveAs dataSaveAs { get; set; } = new DataSaveAs();
 
     [ObservableProperty]
     [PropertyEditor(typeof(ObjectPropertyEditor))]
@@ -91,11 +105,6 @@ public partial class DataVisualization : ObservableObject {
     [DisplayName("数据修饰")]
     public partial DataModification dataModification { get; set; } = new DataModification();
 
-    [ObservableProperty]
-    [PropertyEditor(typeof(ObjectPropertyEditor))]
-    [DisplayName("数据渲染")]
-    public partial DataRender dataRender { get; set; } = new DataRender();
-
     public async Task<DataFrame> createDataFrame() {
         DataFrame dataFrame = await dataExtractor.extractor();
         dataFrame = await dataModification.modifiedDataFrame(dataFrame);
@@ -104,12 +113,83 @@ public partial class DataVisualization : ObservableObject {
 
 }
 
+public partial class DataSaveAs : ObservableObject {
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(ButtonEditor))]
+    [DisplayName("导出")]
+    public partial RoutedEventHandler onClickSaveAs { get; set; }
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(PlainTextPropertyEditor))]
+    [DisplayName("保存目录")]
+    public partial string saveDirectory { get; set; }
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(PlainTextPropertyEditor))]
+    [DisplayName("文件后缀")]
+
+    public partial string fileSuffix { get; set; } = "csv";
+
+    public DataSaveAs() {
+        saveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\DroneDataCollection\Data\";
+
+        onClickSaveAs = (sender, args) => Task.Run
+        (
+            async () => {
+                /*OpenFileDialog dlg = new OpenFileDialog();
+                dlg.Title = "导出CSV";
+                dlg.FileName = "Data.csv";
+                dlg.DefaultExt = ".csv";
+                dlg.Filter = "CSV|*.csv|All files (*.*)|*.*";
+                dlg.InitialDirectory = "D:\\Downloads";
+
+                if (dlg.ShowDialog() ?? false) {
+
+                }*/
+
+                DataVisualizationPanel dataVisualization = MainWindow.mainWindow.dataVisualizationPanel;
+                DataFrame dataFrame = await dataVisualization.dataVisualization.createDataFrame();
+                Directory.CreateDirectory(saveDirectory);
+                string filePath = Path.Combine(saveDirectory, DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-ffff") + "." + fileSuffix);
+                DataFrame.SaveCsv(dataFrame, filePath);
+                Process.Start("explorer.exe", $"/select, \"{filePath}\"");
+            }
+        );
+    }
+
+}
+
 public partial class DataRender : ObservableObject {
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(ButtonEditor))]
+    [DisplayName("渲染")]
+    public partial RoutedEventHandler onClickRender { get; set; }
 
     [ObservableProperty]
     [PropertyEditor(typeof(EnumPropertyEditor))]
     [DisplayName("渲染类型")]
     public partial DataRenderType dataRenderType { get; set; } = DataRenderType.chartData;
+
+    public DataRender() {
+        onClickRender = (s, e) => Task.Run
+        (
+            async () => {
+                DataVisualizationPanel dataVisualization = MainWindow.mainWindow.dataVisualizationPanel;
+                DataFrame dataFrame = await dataVisualization.dataVisualization.createDataFrame();
+                dataVisualization.Dispatcher.Invoke
+                (
+                    () => {
+                        DataWindow dataWindow = new DataWindow();
+                        dataWindow.dataFrame = dataFrame;
+                        dataWindow.dataElement = dataVisualization.dataVisualization.dataRender.create();
+                        dataWindow.Show();
+                    }
+                );
+            }
+        );
+    }
 
     protected override void OnPropertyChanged(PropertyChangedEventArgs e) {
         base.OnPropertyChanged(e);

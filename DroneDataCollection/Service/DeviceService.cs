@@ -77,6 +77,7 @@ public partial class DeviceService : ObservableObject {
         (
             async () => {
                 List<Device> devices = await App.instance.sqlService.query<Device>("SELECT * FROM device");
+                devices = devices.Where(d => !d.deleted).ToList();
                 foreach (Device device in devices) {
                     deviceIdMap.TryAdd(device.host_name, device.id);
                     idMap.TryAdd(device.id, device.host_name);
@@ -85,9 +86,6 @@ public partial class DeviceService : ObservableObject {
                 (
                     () => {
                         foreach (Device device in devices) {
-                            if (device.deleted) {
-                                continue;
-                            }
                             RunTimeDevice runTimeDevice = new RunTimeDevice {
                                 id = device.id,
                                 hostName = device.host_name,
@@ -169,6 +167,7 @@ public partial class DeviceService : ObservableObject {
                     .ToList();
 
                 bool headerFile = valueTuples.Count == 1;
+                bool haveFile = valueTuples.Count > 1;
 
                 if (valueTuples.Count == 0) {
                     App.instance.Dispatcher.Invoke(() => { device.state = "最新状态..."; });
@@ -262,7 +261,7 @@ public partial class DeviceService : ObservableObject {
                 end:
                 await Task.Delay
                 (
-                    headerFile
+                    haveFile
                         ? 100
                         : 600000
                 );
@@ -316,6 +315,9 @@ public partial class DeviceService : ObservableObject {
                         () => {
                             runTimeDevice.id = id;
                             runTimeDeviceCollection.Add(runTimeDevice);
+                            deviceIdMap.TryAdd(runTimeDevice.hostName, id);
+                            idMap.TryAdd(id, runTimeDevice.hostName);
+                            loadDeviceComplete?.Invoke();
                         }
                     );
                 }

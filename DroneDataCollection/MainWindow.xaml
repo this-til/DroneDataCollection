@@ -25,7 +25,7 @@
             </TabItem>
             <TabItem x:Name="dataVisualizationTabItem"
                      Header="数据可视化">
-                <self:DataVisualizationPanel></self:DataVisualizationPanel>
+                <self:DataVisualizationPanel x:Name="dataVisualizationPanel"></self:DataVisualizationPanel>
             </TabItem>
             <TabItem x:Name="consolePanelTabItem"
                      Header="控制台">

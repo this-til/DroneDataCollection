@@ -13,7 +13,7 @@
 
     </UserControl.Resources>
 
-    <Grid>
+    <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -31,7 +31,10 @@
             <local:DepthPropertyGrid SelectedObject="{Binding dataVisualization}">
             </local:DepthPropertyGrid>
         </ScrollViewer>
-    </Grid>
+    </Grid>-->
+    
+    <local:DepthPropertyGrid SelectedObject="{Binding dataVisualization}">
+    </local:DepthPropertyGrid>
 
 
 </UserControl>

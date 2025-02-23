@@ -6,15 +6,18 @@ using HandyControl.Controls;
 
 namespace DroneDataCollection;
 
-public class ButtonEditor : PropertyEditorBase {
+public class ButtonEditor : PropertyEditorBase { 
 
     public override DepthPropertyItem CreateElement(PropertyDescriptor propertyDescriptor, object value) {
         RowDepthPropertyItem rowDepthPropertyItem = new RowDepthPropertyItem();
         TitleElement.SetTitleWidth(rowDepthPropertyItem.groupBox, new GridLength(0));
         Button button = new Button();
 
-        button.Content = propertyDescriptor.DisplayName;
+        button.HorizontalAlignment = HorizontalAlignment.Stretch;
+        button.Width = double.NaN; 
 
+        button.Content = propertyDescriptor.DisplayName;
+        
         BindingOperations.SetBinding
         (
             button,
