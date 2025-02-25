@@ -261,7 +261,7 @@ public partial class DeviceService : ObservableObject {
                             await using MySqlCommand cmd = new MySqlCommand
                             (
                                 $"""
-                                 INSERT INTO data (device_id, time, {string.Join(',', Presets.insertDataField)}) 
+                                 INSERT INTO data (device_id, {string.Join(',', Presets.insertDataField)}) 
                                  VALUES ({device.id}, {string.Join(',', dataFrame.Rows[i].Select(o => $"'{o}'"))})
                                  """,
                                 App.instance.sqlService.sqlConnection,
