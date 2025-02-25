@@ -156,7 +156,8 @@ public partial class DeviceService : ObservableObject {
                 List<(FtpListItem, DateTime)> valueTuples = ftpListItems.Select
                     (
                         f => {
-                            if (!DateTime.TryParseExact(f.Name, "yyyyMMdd_HHmmss", null, DateTimeStyles.None, out DateTime time)) {
+                            string dateTime = f.Name.Substring(0, f.Name.LastIndexOf('.'));
+                            if (!DateTime.TryParseExact(dateTime, "yyyyMMdd_HHmmss", null, DateTimeStyles.None, out DateTime time)) {
                                 time = DateTime.MinValue;
                             }
                             return (f, time);
@@ -195,16 +196,62 @@ public partial class DeviceService : ObservableObject {
 
                     byte[] downloadBytes = await asyncFtpClient.DownloadBytes(ftpListItem.FullName, device.cancellationTokenSource.Token);
 
-                    DataFrame dataFrame = DataFrame.LoadCsv
-                    (
-                        Encoding.UTF8.GetString(downloadBytes),
-                        ',',
-                        false,
-                        Presets.dataField.ToArray()
-                    );
+                    DataFrame dataFrame;
+                    if (downloadBytes.Length != 0) {
 
-                    dataFrame = await new TimeMerging().modifiedDataFrame(dataFrame);
+                        StringBuilder stringBuilder = new StringBuilder();
+                        using (StringReader reader = new StringReader(Encoding.UTF8.GetString(downloadBytes))) {
+                            while (await reader.ReadLineAsync() is { } line) {
+                                if (line.Contains('=')) {
+                                    continue;
+                                }
+                                stringBuilder.AppendLine(line);
+                            }
+                        }
 
+                        dataFrame = DataFrame.LoadCsvFromString
+                        (
+                            stringBuilder.ToString(),
+                            ',',
+                            false,
+                            Presets.dataField.ToArray()
+                        );
+                    }
+                    else {
+                        dataFrame = new DataFrame
+                        (
+                            Presets.dataField
+                                .Select(s => new StringDataFrameColumn(s))
+                        );
+                    }
+
+                    //dataFrame = await new TimeMerging().modifiedDataFrame(dataFrame);
+
+                    int indexOf = dataFrame.Columns.IndexOf("utc");
+                    if (indexOf == -1) {
+                        throw new ArgumentException($"Column utc does not exist in the DataFrame.");
+                    }
+                    DataFrameColumn dataFrameColumn = dataFrame.Columns[indexOf];
+
+                    DateTimeDataFrameColumn dateTimeDataFrameColumn = new DateTimeDataFrameColumn("time", dataFrameColumn.Length);
+                    for (int i = 0; i < dataFrameColumn.Length; i++) {
+                        object? utcObj = dataFrameColumn[i];
+                        string utc = utcObj?.ToString() ?? "000000.0";
+                        utc = utc.PadLeft(8, '0');
+                        
+                        if (!DateTime.TryParseExact(utc, "HHmmss.f", null, DateTimeStyles.None, out DateTime time)) {
+                            time = DateTime.MinValue;
+                        }
+
+                        time = time.AddHours(8);
+                        time = new DateTime(dateTime.Year, dateTime.Month, dateTime.Day).Add(time.TimeOfDay);
+                        
+                        dateTimeDataFrameColumn[i] = time;
+                    }
+
+                    dataFrame.Columns.Remove(dataFrameColumn);
+                    dataFrame.Columns.Insert(indexOf, dataFrameColumn);
+                    
                     await using MySqlTransaction transaction = await App.instance.sqlService.sqlConnection.BeginTransactionAsync();
 
                     try {
@@ -214,7 +261,7 @@ public partial class DeviceService : ObservableObject {
                             await using MySqlCommand cmd = new MySqlCommand
                             (
                                 $"""
-                                 INSERT INTO data (device_id, {string.Join(',', Presets.insertDataField)}) 
+                                 INSERT INTO data (device_id, time, {string.Join(',', Presets.insertDataField)}) 
                                  VALUES ({device.id}, {string.Join(',', dataFrame.Rows[i].Select(o => $"'{o}'"))})
                                  """,
                                 App.instance.sqlService.sqlConnection,

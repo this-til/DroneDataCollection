@@ -46,10 +46,8 @@ public partial class DataExtractor : ObservableObject {
         attentionField.itemsSource.CollectionChanged += OnPropertyChanged;
 
         foreach (string fieldName in Presets.fieldNames) {
-            attentionField.itemsSource.Add(fieldName);
-        }
-        foreach (string outFieldName in Presets.outFieldNames) {
-            attentionField.selectedItems.Add(outFieldName);
+            attentionField.itemsSource.Add(fieldName);  
+            attentionField.selectedItems.Add(fieldName);
         }
     }
 

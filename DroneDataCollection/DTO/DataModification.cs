@@ -30,6 +30,17 @@ public partial class DataModification : ObservableObject {
     [Visibility]
     public partial TimeMerging timeMerging { get; set; } = new TimeMerging();
 
+    /*[ObservableProperty]
+    [PropertyEditor(typeof(SwitchPropertyEditor))]
+    [DisplayName("启用UTC时间转换")]
+    public partial bool utcTimeConvertVisibility { get; set; }
+    
+    [ObservableProperty]
+    [PropertyEditor(typeof(ObjectPropertyEditor))]
+    [DisplayName("UTC时间转换")]
+    [Visibility]
+    public partial UtcTimeConvert utcTimeConvert { get; set; } = new UtcTimeConvert();*/
+
     [ObservableProperty]
     [PropertyEditor(typeof(SwitchPropertyEditor))]
     [DisplayName("启用设备Id转为设备名")]
@@ -200,6 +211,29 @@ public partial class TimeMerging : DataModificationBase {
     }
 
 }
+
+/*public partial class UtcTimeConvert : DataModificationBase {
+    
+    [ObservableProperty]
+    [PropertyEditor(typeof(PlainTextPropertyEditor))]
+    [DisplayName("日期时间列名")]
+    public partial string sourceColumnName { get; set; } = "utc";
+
+    [ObservableProperty]
+    [PropertyEditor(typeof(PlainTextPropertyEditor))]
+    [DisplayName("日期时间列名")]
+    public partial string outColumn { get; set; } = "time";
+
+    public override Task<DataFrame> modifiedDataFrame(DataFrame dataFrame) {
+        int indexOf = dataFrame.Columns.IndexOf(sourceColumnName);
+        if (indexOf == -1) {
+            throw new ArgumentException($"Column '{sourceColumnName}' does not exist in the DataFrame.");
+        }
+        
+        
+    }
+
+}*/
 
 public partial class DeviceIdToName : DataModificationBase {
 

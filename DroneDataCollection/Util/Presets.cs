@@ -3,7 +3,6 @@
 public class Presets {
 
     public static List<string> fieldNames = new List<string> {
-        "id",
         "device_id",
         "time",
         "ux",
@@ -13,11 +12,11 @@ public class Presets {
         "hy",
         "hz",
         "t",
-        "x",
         "y",
+        "x",
+        "interpret_y",
+        "interpret_x",
         "h",
-        "x1",
-        "x2",
         "la_h",
         "gyro_1",
         "gyro_2",
@@ -26,34 +25,8 @@ public class Presets {
         "gps_2",
         "gps_3"
     };
-
-    public static List<string> outFieldNames = new List<string> {
-        "device_id",
-        "time",
-        "ux",
-        "uy",
-        "uz",
-        "hx",
-        "hy",
-        "hz",
-        "t",
-        "x",
-        "y",
-        "h",
-        "x1",
-        "x2",
-        "la_h",
-        "gyro_1",
-        "gyro_2",
-        "gyro_3",
-        "gps_1",
-        "gps_2",
-        "gps_3"
-    };
-
+    
     public static List<string> dataField = new List<string> {
-        "date",
-        "time",
         "ux",
         "uy",
         "uz",
@@ -61,23 +34,16 @@ public class Presets {
         "hy",
         "hz",
         "t",
-        "x",
+        "utc",
         "y",
+        "x",
+        "interpret_y",
+        "interpret_x",
         "h",
-        "x1",
-        "x2",
-        "la_h",
-        "gyro_1",
-        "gyro_2",
-        "gyro_3",
-        "gps_1",
-        "gps_2",
-        "gps_3"
+        "la_h"
     };
-
     
     public static List<string> insertDataField = new List<string> {
-        "time",
         "ux",
         "uy",
         "uz",
@@ -85,17 +51,12 @@ public class Presets {
         "hy",
         "hz",
         "t",
-        "x",
+        "time",
         "y",
+        "x",
+        "interpret_y",
+        "interpret_x",
         "h",
-        "x1",
-        "x2",
-        "la_h",
-        "gyro_1",
-        "gyro_2",
-        "gyro_3",
-        "gps_1",
-        "gps_2",
-        "gps_3"
+        "la_h"
     };
 }

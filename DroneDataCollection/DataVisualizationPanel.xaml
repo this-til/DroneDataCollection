@@ -33,8 +33,9 @@
         </ScrollViewer>
     </Grid>-->
     
-    <local:DepthPropertyGrid SelectedObject="{Binding dataVisualization}">
-    </local:DepthPropertyGrid>
-
+    <ScrollViewer Grid.Row="1">
+        <local:DepthPropertyGrid SelectedObject="{Binding dataVisualization}">
+        </local:DepthPropertyGrid>
+    </ScrollViewer>
 
 </UserControl>
